@@ -38,6 +38,11 @@ Each sequencer step is represented by a box housing a pulldown and a selection. 
 
 Example sequences are hosted in the seqs folder.
 
+The visual feedback provided by the sequencer is a point mirrored picture of the input trajectory. Small lines guide you back to where the input took place.
+
+## Notes
+Use the fullscreen mode of the brwoser to expand the area of the.
+
 # Example Sequencer
 
 ## PD
@@ -60,4 +65,7 @@ v.0.1 (03.12.2019) tested on latest Chrome
 # Future Days
 For the next Version an adaption to smaller touch screens is planned. Also I am looking forward to receive some nice sequences as example. If someone needs Open Sound Control, I can provide the whole software as browser plug-in with Open Sound Control. If someone face any errors please forward the issue right hear. The example sequencer will be upgraded with a convolution filter and a different tuning. Any ideas, anyone?
 
+# Installation
+
+If you want to use the software offline or on your server, just extract the content of the src folder to a dictory of your server and make this available. It just a website.
 
