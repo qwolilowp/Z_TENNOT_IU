@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="de">
+	<head>
+		<meta charset="utf-8" />
+        <link rel="shortcut icon" href="favicon.ico" />
+		<link rel="apple-touch-icon" href="favicon.ico" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <meta name=”viewport” content=”width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;” />
+        <meta name=”viewport” content=”width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=false;” />
+        <meta name=”viewport” content=”width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no;” />
+        <meta name="viewport" content="width=device-width, user-scalable=no" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="HandheldFriendly" content="true">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+
+
+		<title>Z _ T E N N O T _ I U</title>
+        <style>
+		html {
+            overflow: hidden;
+            touch-action: none;  /*seem to just prevent scrolling*/ 
+            position: fixed; 
+            font-family: Arial;
+        }
+        body{
+            height:100%;
+            width:100%;
+            -webkit-touch-callout: none;
+            -webkit-user-select:none;
+            -khtml-user-select:none;
+            -moz-user-select:none;
+            -ms-user-select:none;
+            -o-user-select:none;
+            user-select:none;
+        }
+        svg text{  /*ignore svg text on button while touching*/ 
+            -webkit-touch-callout: none;
+            -webkit-user-select:none;
+            -khtml-user-select:none;
+            -moz-user-select:none;
+            -ms-user-select:none;
+            -o-user-select:none;
+            user-select:none;
+            pointer-events: none;
+            -webkit-tap-highlight-color:rgba(0,0,0,0);
+        }
+        .seqteprep{
+            border-radius: 2px;
+            border: 1px solid gray;
+            padding:1px;
+            margin:1px;
+            font-size:10px;
+            display:inline-block;
+        }
+        .seqteprep input{
+            font-size:10px;
+        }
+        </style>
+		<script type="text/javascript" src="multivitamin.js"></script>
+
+		
+	</head>
+	<body>
+        <div id="menu" style="position:absolute; top:550px; z-index:10;">
+            <button type="button" onclick="showmidimenu();">MIDI</button>
+            <!--button type="button" onclick="showoscmenu();">OCS</button-->
+            <button type="button" onclick="showbuttmenu();">UI</button>
+            <button type="button" onclick="showgestmenu();">Gesture</button>
+            <button type="button" onclick="showseqmenu();">Sequencer</button>
+                        
+            <div id="midimenu" style="display:none; border:1px solid gray;magrin:2px;padding:2px;">
+                <label for="inputportselector">MIDI Input:</label>
+                <select id="inputportselector">
+		        </select>
+                <label for="outputportselector">MIDI Output:</label>
+                <select id="outputportselector" onchange="resetMIDIout( );">
+		        </select>
+                <label for="trajrec">Send to all</label>
+                <input type="checkbox" id="sedtoall" onclick="setsendtoall();">
+            </div> 
+
+            <div id="oscmenu" style="display:none; border:1px solid gray;magrin:2px;padding:2px;">
+                <label for="basestring">OSC Base:</label>
+                <input type="text" width="10" id="basestring" value="" onkeyup="changeOSCstr();">
+                <label for="trajrec">Send OSC</label>
+                <input type="checkbox" id="sendosc" onclick="setsendosc();">
+            </div>   
+            
+            <div id="buttonmenu" style="display:none; border:1px dashed gray;magrin:2px;padding:2px;">   
+                <label for="trajrec">Mixed Path</label>
+                <input type="checkbox" id="trajrec" onclick="menutraj();">
+                <label for="daynightsel">Background</label>
+                <select id="daynightsel" onchange="daynight( );">
+                    <option value=0>NIGHT</option>
+                    <option value=1>DAY</option>
+		        </select>
+                <label for="trajrec">Selftouch</label>
+                <button type="button" id="trajrec" onclick="doselftouch();">Do</button>
+            </div>
+
+            <div id="gestmenu" style="display:none; border:1px dotted gray;magrin:2px;padding:2px;">   
+                <label for="gestrec">Gestures</label>
+                <input type="checkbox" id="gestrec" onclick="setusegest();" checked>
+                <label for="gestvel">Trajectoryvelocity 2 Velocity</label>
+                <input type="checkbox" id="gestvel" onclick="setusevel();" checked>
+                <label for="gestafter">Curvature 2 Aftertouch</label>
+                <input type="checkbox" id="gestafter" onclick="setuseafter();" checked>
+                <label for="gestmodu">Curvature 2 Modulation</label>
+                <input type="checkbox" id="gestmodu" onclick="setusemodul();" checked>
+            </div>
+
+            <div id="seqmenu" style="display:none; border:1px dashed gray; magrin:2px;padding:2px;">
+                <label for="trajrecseq">Add to Seq.</label>
+                <input type="checkbox" id="trajrecseq" checked onclick="menusequtraj();">
+                
+                <button type="button" id="seqplay" onclick="play();">Play</button>
+                <button type="button" id="seqpause" onclick="pause();">Pause</button>  
+                <button type="button" id="seqclear" onclick="clearseq();">Clear</button>
+                <button type="button" id="seqdown" onclick="downseq();">Download</button>
+                <input type="file" id="seqinput" name="Local file inp" value="Upload" onchange="upseq( );">    <br>
+                <label for="trajrecseq">Sequence:</label>
+                <span id="seqtiming">
+		        </span>
+            </div>     
+		</div>
+
+
+		<div id="hereitlives">
+		</div>
+
+        
+        <script>
+            netz( "hereitlives" );
+            document.getElementById('basestring').value = OSCstring;
+        </script>
+	</body>
+</html>
