@@ -36,7 +36,7 @@ The gesture menu enables the mapping of computed control value to a MIDI signal.
 The sequencer playes back the "recorded trajectories" and emits the MIDI on its own. If the first selection is set, every new touch or path is added to the sequncer. The sequencer main menu supports play, pause, and deleting of the sequence. You also can download a sequnce and upload it again.
 Each sequencer step is represented by a box housing a pulldown and a selection. The pulldown lets you choose a delaay after the sequncerstep is played. The selection lets you mute the step. The internal time of each step corresponds to the duration of input. 
 
-Example sequneces are hosted in the seqs folder.
+Example sequences are hosted in the seqs folder.
 
 # Example Sequencer
 
