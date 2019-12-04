@@ -1,6 +1,10 @@
 # Z_TENNOT_IU
 
-The first version of the interface is inspired by harmonic tabel note layout, Tonnetz, Browser GUI, WebMIDI Interface and Sequencing. You can use up to five fingers to play notes on the intervall grid. Theoreticaly you can use as much fingers as your touchhardware supports, but the internal polyphon mapping is limited to five fingers. Additional there is a sequencer that let you loop your input and modifie it in terms of time.
+The first version of the interface is inspired by harmonic tabel note layout, Tonnetz, Browser GUI, WebMIDI interface and sequencing. You can use up to five fingers to play notes on the intervall grid. Theoreticaly you can use as much fingers as your touchhardware supports, but the internal polyphon mapping is limited to five fingers. Additional there is a sequencer that let you loop your input and modifie it in terms of time.
+
+Visit 
+
+https://www.z-tennot-iu.de
 
 # Usage
 
@@ -31,6 +35,8 @@ The gesture menu enables the mapping of computed control value to a MIDI signal.
 
 The sequencer playes back the "recorded trajectories" and emits the MIDI on its own. If the first selection is set, every new touch or path is added to the sequncer. The sequencer main menu supports play, pause, and deleting of the sequence. You also can download a sequnce and upload it again.
 Each sequencer step is represented by a box housing a pulldown and a selection. The pulldown lets you choose a delaay after the sequncerstep is played. The selection lets you mute the step. The internal time of each step corresponds to the duration of input. 
+
+Example sequneces are hosted in the seqs folder.
 
 # Example Sequencer
 
