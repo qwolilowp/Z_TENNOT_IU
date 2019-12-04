@@ -15,8 +15,14 @@ Use the note value labeled hexagon to play single tones. Use the belts between h
 There are four menu buttons at the bottom of the interface. The show and hide the corresponding menus. The MIDI menu let you control the hardware / software midi output the programm should send to and listen to. MIDI input is not used now. The last select enables sending to all MIDI devices. Most selections are stored in the browser local storage and is used as configuration preset. 
 
 ## UI (user interface) Menu 
+![](ui.png?raw=true)
 
 ## Gesture Menu
+![](gest.png?raw=true)
+
+Towards a not aleatiric but not functional modification of parameters the software provides a light evaluation of "shape" of trajectories and movement. There are more possibilities to computer control values from movement and picture, but there need to be the possibility of expaction of audible modification a performance provokes.
+
+The gesture menu enables the mapping of computed control value to a MIDI signal. The first selection en- or disables the whole thing. If enabled you can choose if Velocity, Aftertouch or/and Pitch Bend sould be used. The performance gains liveliness. Test it.
 
 ## Sequencer Menu
 
@@ -35,3 +41,7 @@ There are four menu buttons at the bottom of the interface. The show and hide th
 
 # Version
 v.0.1 (03.12.2019) tested on latest Chrome 
+
+# Futur Days
+For the next Version an adaption to smaller touchscreens is planned. Also I am looking forward to receive some nice sequences as example. If someone needs OpenSound Control, I can provide the whole software as Browserplugin with Opensound control. If someone face any errors please forward the issue right hear.
+
