@@ -17,6 +17,8 @@ There are four menu buttons at the bottom of the interface. The show and hide th
 ## UI (user interface) Menu 
 ![](ui.png?raw=true)
 
+This menu is related to the user interface. You can choose if a path or trajectory you form with your touches has only a single type of noteplay (for example just hexagon buttons) or a could be a mixture of all possible buttonforms. You can choose betrwwn a white and a black background. And there is a touchsimmulation called selftouch for testing purpose.
+
 ## Gesture Menu
 ![](gest.png?raw=true)
 
@@ -25,12 +27,15 @@ Towards a not aleatiric but not functional modification of parameters the softwa
 The gesture menu enables the mapping of computed control value to a MIDI signal. The first selection en- or disables the whole thing. If enabled you can choose if Velocity, Aftertouch or/and Pitch Bend sould be used. The performance gains liveliness. Test it.
 
 ## Sequencer Menu
+![](seq.png?raw=true)
+
+The sequencer playes back the "recorded trajectories" and emits the MIDI on its own. If the first selection is set, every new touch or path is added to the sequncer. The sequencer main menu supports play, pause, and deleting of the sequence. You also can download a sequnce and upload it again.
+Each sequencer step is represented by a box housing a pulldown and a selection. The pulldown lets you choose a delaay after the sequncerstep is played. The selection lets you mute the step. The internal time of each step corresponds to the duration of input. 
 
 # Example Sequencer
 
 ## PD
 
-## MIDI
 
 # Looks like?
 ![](a5..png?raw=true)
@@ -43,5 +48,5 @@ The gesture menu enables the mapping of computed control value to a MIDI signal.
 v.0.1 (03.12.2019) tested on latest Chrome 
 
 # Futur Days
-For the next Version an adaption to smaller touchscreens is planned. Also I am looking forward to receive some nice sequences as example. If someone needs OpenSound Control, I can provide the whole software as Browserplugin with Opensound control. If someone face any errors please forward the issue right hear.
+For the next Version an adaption to smaller touchscreens is planned. Also I am looking forward to receive some nice sequences as example. If someone needs OpenSound Control, I can provide the whole software as Browserplugin with Opensound control. If someone face any errors please forward the issue right hear. The example sequnecer will be upgraded with a convoltion filter.
 
