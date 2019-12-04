@@ -35,6 +35,7 @@ Each sequencer step is represented by a box housing a pulldown and a selection. 
 # Example Sequencer
 
 ## PD
+The first example software synthesizer is made with pure data (PD). You can find PD examples in the PDsynth folder. The sequencer takes note-on and -off messages and channel after touch messages. It as 15 voices or let say oscillators and a additional 15 oscillators for modulation. The the output is a singal sum and that is it.
 
 
 # Looks like?
@@ -48,5 +49,5 @@ Each sequencer step is represented by a box housing a pulldown and a selection. 
 v.0.1 (03.12.2019) tested on latest Chrome 
 
 # Futur Days
-For the next Version an adaption to smaller touchscreens is planned. Also I am looking forward to receive some nice sequences as example. If someone needs OpenSound Control, I can provide the whole software as Browserplugin with Opensound control. If someone face any errors please forward the issue right hear. The example sequnecer will be upgraded with a convoltion filter.
+For the next Version an adaption to smaller touchscreens is planned. Also I am looking forward to receive some nice sequences as example. If someone needs Open Sound Control, I can provide the whole software as Browserplugin with Open Sound Control. If someone face any errors please forward the issue right hear. The example sequencer will be upgraded with a convoltion filter and a different tuning. Any ideas, onyone?
 
