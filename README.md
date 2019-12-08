@@ -67,5 +67,5 @@ For the next Version an adaption to smaller touch screens is planned. Also I am 
 
 # Installation
 
-If you want to use the software offline or on your server, just extract the content of the src folder to a dictory of your server and make this available. It just a website.
+If you want to use the software offline or on your server, just extract the content of the src folder to a dictory of your server and make this available. It's just a website.
 
