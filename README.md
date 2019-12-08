@@ -41,7 +41,7 @@ Example sequences are hosted in the seqs folder.
 The visual feedback provided by the sequencer is a point mirrored picture of the input trajectory. Small lines guide you back to where the input took place.
 
 ## Notes
-Use the fullscreen mode of the brwoser to expand the area of the.
+Use the fullscreen mode of the brwoser to expand the button area.
 
 # Example Sequencer
 
