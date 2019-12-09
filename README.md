@@ -13,10 +13,15 @@ https://www.z-tennot-iu.de
 
 Use the note value labeled hexagon to play single tones. Use the belts between hexagons to play the two connected notes. And finally you can use the encircled area to play the three notes in the corners of the area. Trajectories formed through the travel of you fingertips could consist of only the type of shape you started at, or of all kinds of shapes. MIDI note-on and note-off mapping is close to MIDI Polyphonic Expression. You can play up to three channels with one touch. If you play one tone with one finger on channel is used, if you play two tones with one finger two channels are used and finally if you play three notes with one finger three channels are used. This MIDI mapping allows up to five finger polyphonic performance.
 
+
+## Main Menu
+![](allmen.png?raw=true)
+There are five menu buttons at the bottom of the interface. They show and hide the corresponding menus. 
+
 ## MIDI Menu
 ![](midi.png?raw=true)
 
-There are four menu buttons at the bottom of the interface. They show and hide the corresponding menus. The MIDI menu let you control the hardware / software midi output the program should send to and listen to. MIDI input is not used now. The last selection enables sending to all MIDI devices. Most user-selections are stored in the browser local storage and are used as configuration preset.
+The MIDI menu let you control the hardware / software midi output the program should send to and listen to. MIDI input is not used now. The last selection enables sending to all MIDI devices. Most user-selections are stored in the browser local storage and are used as configuration preset.
 
 ## UI (user interface) Menu
 ![](ui.png?raw=true)
