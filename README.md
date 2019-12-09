@@ -70,7 +70,7 @@ to connect the virtual MIDI cable, depending on you setup.
 ![No Menu](a1.png?raw=true)
 ![All Menu](a4.png?raw=true)
 
-One quick Screencast of the running sequencer:
+One quick screencast of the running sequencer:
 
 https://www.z-tennot-iu.de/quickview1.webm
 
