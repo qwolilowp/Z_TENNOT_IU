@@ -49,10 +49,10 @@ The visual feedback provided by the sequencer is a point mirrored picture of the
 ## internal Synth Menu
 ![](synth.png?raw=true)
 
-To test the button matrix one can use a simple muilt oszillator WebAudio Synth. The checkbox enables or diables the internal playback.
+To test the button matrix one can use a simple muilt oszillator WebAudio synth. The checkbox enables or diables the internal playback.
 
 ## Notes
-Use the fullscreen mode of the brwoser to expand the button area.
+Use the fullscreen mode of the browser to expand the button area.
 
 # Example Sequencer
 
