@@ -16,6 +16,7 @@ Use the note value labeled hexagon to play single tones. Use the belts between h
 
 ## Main Menu
 ![](allmen.png?raw=true)
+
 There are five menu buttons at the bottom of the interface. They show and hide the corresponding menus. 
 
 ## MIDI Menu
