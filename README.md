@@ -75,7 +75,7 @@ One quick screencast of the running sequencer:
 https://www.z-tennot-iu.de/quickview1.webm
 
 # Version
-v.0.1 (03.12.2019) tested on latest Chrome
+v.0.1 (03.12.2019) tested on latest Desktop Chrome and 24" Full HD touchscreen
 
 # Future Days
 For the next Version an adaption to smaller touch screens is planned. Also I am looking forward to receive some nice sequences as example. If someone needs Open Sound Control, I can provide the whole software as browser plug-in with Open Sound Control. If someone face any errors please forward the issue right hear. The example sequencer will be upgraded with a convolution filter and a different tuning. Any ideas, anyone?
