@@ -39,6 +39,8 @@ MIDI / LINUX NOTE:
 let touchesTargetOvertime = { };
 let mixedtraj = false;
 let notesplaying = { };
+let mouseit = false;
+let howmuchreduce = 0;
 
 /*sequnecer*/
 let passtosequencer = true;
@@ -60,8 +62,8 @@ let backgrDAYNIGHT = 1; //1 day 0 night
 let strokeoftraj = "black";
 let seqtimingelem = null;
 //Buttons 
-let elemsize = 27; //values are reset by the init fkt
-let elemdist = 2;
+let elemsize = 57; //values are reset by the init fkt
+let elemdist = 5;
 let elemcount = 19;
 
 /*MIDI globals*/
@@ -215,6 +217,8 @@ let jesnomodulation = false;
 /*SVG Globals*/
 let xmlns = "http://www.w3.org/2000/svg";
 
+/*internal synth*/
+let useinternal = false;
 
 //TONNETZ / harmonische Tabelle
 //jedes folgende array ist so versetzt, dass die a10 und a20 kleine Terz ist
@@ -681,6 +685,148 @@ let midiNotesCOLOR = {
 //
 };
 
+//MIDI NUM FREQ MAPPING -Stimmung
+//welche: https://bluemich.net/drehorgel/stimmung-temperaturen.pdf
+let currtunning = 0;
+let clean = {
+
+};
+
+let equal = {
+    128:13289.75,
+    127:12543.85,
+    126:11839.82,
+    125:11175.30,
+    124:10548.08,
+    123:9956.06,
+    122:9397.27,
+    121:8869.84,
+    120:8372.02,
+    119:7902.13,
+    118:7458.62,
+    117:7040.00,
+    116:6644.88,
+    115:6271.93,
+    114:5919.91,
+    113:5587.65,
+    112:5274.04,
+    111:4978.03,
+    110:4698.64,
+    109:4434.92,
+    108:4186.01,
+    107:3951.07,
+    106:3729.31,
+    105:3520.00,
+    104:3322.44,
+    103:3135.96,
+    102:2959.96,
+    101:2793.83,
+    100:2637.02,
+    99:2489.02,
+    98:2349.32,
+    97:2217.46,
+    96:2093.00,
+    95:1975.53,
+    94:1864.66,
+    93:1760.00,
+    92:1661.22,
+    91:1567.98,
+    90:1479.98,
+    89:1396.91,
+    88:1318.51,
+    87:1244.51,
+    86:1174.66,
+    85:1108.73,
+    84:1046.50,
+    83:987.77,
+    82:932.33,
+    81:880.00,
+    80:830.61,
+    79:783.99,
+    78:739.99,
+    77:698.46,
+    76:659.26,
+    75:622.25,
+    74:587.33,
+    73:554.37,
+    72:523.25,
+    71:493.88,
+    70:466.16,
+    69:440.00,
+    68:415.30,
+    67:392.00,
+    66:369.99,
+    65:349.23,
+    64:329.63,
+    63:311.13,
+    62:293.66,
+    61:277.18,
+    60:261.63,
+    59:246.94,
+    58:233.08,
+    57:220.00,
+    56:207.65,
+    55:196.00,
+    54:185.00,
+    53:174.61,
+    52:164.81,
+    51:155.56,
+    50:146.83,
+    49:138.59,
+    48:130.81,
+    47:123.47,
+    46:116.54,
+    45:110.00,
+    44:103.83,
+    43:98.00,
+    42:92.50,
+    41:87.31,
+    40:82.41,
+    39:77.78,
+    38:73.42,
+    37:69.30,
+    36:65.41,
+    35:61.74,
+    34:58.27,
+    33:55.00,
+    32:51.91,
+    31:49.00,
+    30:46.25,
+    29:43.65,
+    28:41.20,
+    27:38.89,
+    26:36.71,
+    25:34.65,
+    24:32.70,
+    23:30.87,
+    22:29.14,
+    21:27.50,
+    20:25.96,
+    19:24.50,
+    18:23.12,
+    17:21.83,
+    16:20.60,
+    15:19.45,
+    14:18.35,
+    13:17.32,
+    12:16.35,
+    11:15.43,
+    10:14.57,
+    9:13.75,
+    8:12.98,
+    7:12.25,
+    6:11.56,
+    5:10.91,
+    4:10.30,
+    3:9.72,
+    2:9.18,
+    1:8.66,
+    0:8.18
+};
+
+let tunings = [equal, clean];
+
+
 /******************************************************************************* 
 
                     HELPER FKT
@@ -688,12 +834,12 @@ let midiNotesCOLOR = {
 *******************************************************************************/
 
 function dodownit( contentof, nameoffile, type ){
-    var af = new Blob( [ contentof ], {type: type} );
-    var theIE = false || !!document.documentMode;
-    if ( theIE ){
+    let af = new Blob( [ contentof ], {type: type} );
+    let theIE = false || !!document.documentMode;
+    if( theIE ){
         window.navigator.msSaveOrOpenBlob( af, nameoffile );
     } else {
-        var alink = document.createElement( 'a' );
+        let alink = document.createElement( 'a' );
         alink.href = URL.createObjectURL( af );
         alink.download = nameoffile;
         document.body.appendChild( alink )
@@ -731,6 +877,9 @@ function TOstorage( ){
     localStorage.setItem( "jesnovel", jesnovel );
     localStorage.setItem( "jesnoafter", jesnoafter );
     localStorage.setItem( "jesnomodulation", jesnomodulation );
+    //localStorage.setItem( "useinternal", useinternal );
+    localStorage.setItem( "mouseit", mouseit );
+    localStorage.setItem( "elemdist", elemdist );
 }
 
 function FROMstorage( ){
@@ -748,6 +897,9 @@ function FROMstorage( ){
     jesnovel = JSON.parse( localStorage.getItem( "jesnovel" ) );
     jesnoafter = JSON.parse( localStorage.getItem( "jesnoafter" ) );
     jesnomodulation = JSON.parse( localStorage.getItem( "jesnomodulation" ) );
+    //useinternal = JSON.parse( localStorage.getItem( "useinternal" ) );
+    mouseit = JSON.parse( localStorage.getItem( "mouseit" ) );
+    elemdist = parseInt( localStorage.getItem( "elemdist" ) );
 }
 
 function initSettings( ){
@@ -815,6 +967,26 @@ function menusequtraj( ){
     TOstorage( );
 }
 
+function menumouse( ){
+    if( document.getElementById('useklickel').checked ){
+        mouseit = true;
+    } else {
+        mouseit = false;
+    }
+    TOstorage( );
+}
+
+function buttdist( ){
+    if( document.getElementById('buttspace').value !== "" ){
+        let elemdisttemp = parseInt( document.getElementById('buttspace').value );
+        if(elemdisttemp > 0 && elemdisttemp < 20 ){
+            elemdist = elemdisttemp;
+        }
+    }
+    TOstorage( );
+}
+
+
 function setsendosc( ){
     if( document.getElementById('sendosc').checked ){
         jesnoOSC = true;
@@ -859,6 +1031,19 @@ function setusemodul( ){
     }
     TOstorage( );
 }
+
+function setuseinternalsynth( ){ 
+    if( document.getElementById('internalsynthsw').checked ){
+        useinternal = true;
+        if( notinitsynth ){
+            initSynth( );
+        }
+    } else {
+        useinternal = false;
+    }
+    TOstorage( );
+}
+
 
 function changeOSCstr( ){
     if( document.getElementById('basestring').value !== "" ){
@@ -915,7 +1100,9 @@ function initMenu( ){
     document.getElementById('gestafter').checked = jesnoafter;
     document.getElementById('basestring').value = OSCstring;
     document.getElementById('gestmodu').checked = jesnomodulation;
-
+    //document.getElementById('internalsynthsw').checked = useinternal;
+    document.getElementById('useklickel').checked = mouseit;
+    document.getElementById("buttspace").value = parseInt(elemdist);
     //position of menu
     let m = document.getElementById('menu');
     m.style.width = (w-120).toString()+"px";
@@ -934,6 +1121,10 @@ function showmidimenu( ){
 
 function showbuttmenu( ){
     showsubmenudiv( "#buttonmenu" );
+}
+
+function showsynthmenu( ){
+    showsubmenudiv( "#synthmenu" );
 }
 
 function showseqmenu( ){
@@ -1024,10 +1215,22 @@ function clearseq( ){
     TOstorage( );
 }
 
+function delmuted( ){ //works?
+    //console.log(sequencer);
+    for( let z = 0; z < seqtimingelem.children.length; z+=1 ){
+        if( !seqtimingelem.children[ z ].children[ 1 ].checked ){
+            seqtimingelem.removeChild(seqtimingelem.children[ z ]);
+            sequencer.splice(z, 1);
+            console.log("deled from seq:", z);
+        }
+    }
+    //console.log(sequencer);
+    HplaceMenu( );
+}
 
 /******************************************************************************* 
 
-                   SEQUNECER
+                   SEQUENCER
 
 *******************************************************************************/
 function delfromseq( elem ){
@@ -1075,10 +1278,6 @@ function fromseqtomidi( seqframeI ){
                             //send Pitch Bend per channel
                             if( jesnomodulation && jesnogest ){
                                 var valv1 = parseInt( (16384 * sequencer[ seqframe ][0][ elemid ][ n ][8]) / 128 );
-                                
-  
-
-
                                 var be1 = valv1&127;
                                 var be2 = valv1>>7;
                                 out.send( 
@@ -1216,7 +1415,7 @@ function sequencerstep( ){
 
 /******************************************************************************* 
 
-                   DEFAULT GESTURE / TOUCH HANDLING
+                   DEFAULT GESTURE / TOUCH HANDLING / CLICK
 
 *******************************************************************************/
 
@@ -1550,25 +1749,27 @@ window.addEventListener('touchend', function( e ) {
 
 //SIMULATE a touch
 function filthselftouch(x, y, element, eventType) {
-  const touchObj = new Touch({
-    identifier: Date.now(),
-    target: element,
-    clientX: x,
-    clientY: y,
-    radiusX: 2.5,
-    radiusY: 2.5,
-    rotationAngle: 10,
-    force: 0.5,
-  });
-  const touchEvent = new TouchEvent(eventType, {
-    cancelable: true,
-    bubbles: true,
-    touches: [touchObj],
-    targetTouches: [touchObj],
-    changedTouches: [touchObj],
-    shiftKey: true,
-  });
-  element.dispatchEvent(touchEvent);
+    try{
+      const touchObj = new Touch({
+        identifier: Date.now(),
+        target: element,
+        pageX: x,
+        pageY: y,
+        radiusX: 2.5,
+        radiusY: 2.5,
+        rotationAngle: 10,
+        force: 1.0,
+      });
+      const touchEvent = new TouchEvent(eventType, {
+        cancelable: true,
+        bubbles: true,
+        touches: [touchObj],
+        targetTouches: [touchObj],
+        changedTouches: [touchObj],
+        shiftKey: false,
+      });
+      element.dispatchEvent(touchEvent);
+    }catch{}
 }
 
 function doselftouch(){
@@ -1594,6 +1795,17 @@ function doselftouch(){
 }
 
 
+//event listener klickan and mouse move - pass to touch handler
+//or convert
+let clickedelem = null;
+window.addEventListener('mousedown', function( e ) { 
+    clickedelem = e.target;
+    filthselftouch(e.pageX, e.pageY, clickedelem, 'touchstart');
+});
+window.addEventListener('mouseup', function( e ) { 
+    filthselftouch(e.pageX, e.pageY, clickedelem, 'touchend');
+    clickedelem = null;
+});
 /*******************************************************************************
   
               GUI Building
@@ -1761,7 +1973,7 @@ function getEinklang( cx, cy, r, titletext, cocol, colstro, textlab ){
             subt.setAttribute( 'baseline-shift', "sub" );
         }
         subt.setAttribute('fill', 'black');
-        subt.style.fontSize = '6px';
+        subt.style.fontSize = (Math.round(r/2)).toString()+'px';
         subt.textContent = (textlabspl.length-1).toString();
         textlab = textlabspl[ 0 ];
         add = -3;
@@ -1779,7 +1991,7 @@ function getEinklang( cx, cy, r, titletext, cocol, colstro, textlab ){
     text.setAttribute('y', cy+2);
     text.setAttribute('fill', 'black');
     text.setAttribute('font-family', 'monospace'); 
-    text.style.fontSize = '9px';
+    text.style.fontSize = (Math.round(r/2)).toString()+'px';
     text.textContent = textlab;
     text.appendChild(subt);
     let ri = Math.sqrt( (r*r)-((r/2)*(r/2)) );
@@ -1806,12 +2018,13 @@ function getEinklang( cx, cy, r, titletext, cocol, colstro, textlab ){
 }
 
 function buildUIbuttons( msvg ){ //vertival display better perf
-    let elemradius = Math.floor(elemsize/2);
+    let elemradius = Math.floor( elemsize / 2 );
     //elemcount is eual to the first array length in quintenterzen
-    let incforW = Math.round((w-elemradius)/(elemcount));
-    let incforH = Math.round((h-elemsize)/(quintenterzen.length));
 
+    let incforW = Math.round( (w-elemradius) / (elemcount) );
+    let incforH = Math.round( (h-elemsize)   / (quintenterzen.length) );
 
+    
     
     let indexQuniten = 0;  
     for( let x = elemradius; x < (w-elemradius); x+=incforW ){
@@ -1986,7 +2199,8 @@ function screenInit( ){
     }
     //
     elemcount = quintenterzen[0].length;
-    
+    elemsize = Math.abs(Math.round(Math.max(w,h) / (2*elemcount))-elemdist);
+    //console.log(elemsize, elemdist)
 }
 /*******************************************************************************
    
@@ -2021,15 +2235,78 @@ function onMIDIFailure( ){
 }
 
 function getMIDIMessage( midiMessage ) {
-    //console.log("MIDI in: ", midiMessage.data.toString());
+    if( useinternal ){
+        routeTOsynth( midiMessage );
+    } 
 }
 
 function midiInit( ){ //...
     if( window.navigator.requestMIDIAccess ){
         let midi = window.navigator.requestMIDIAccess().then( onMIDISuccess, onMIDIFailure );
     } else {
+        alert("NO WEBmidi NO fun. Update Browser.");
         console.log("NO MIDI NO FUN");
     }
+}
+
+/******************************************************************************* 
+
+                    internal synth for example usage (webaudio)
+
+*******************************************************************************/
+let notinitsynth = true;
+let audiocontext = null;
+
+let attack=0.05;			
+let release=0.05;		
+let portamento=0.05;	
+
+
+let OSCIS = [];
+let ENVES = [];
+
+function routeTOsynth( msg ){
+    //tunings[currtunning][notenumber]
+    // https://github.com/cwilso/monosynth/blob/gh-pages/index.html
+    let type = msg.data[0] & 0xf0; // channel agnostic message type. Thanks, Phil Burk.
+    if( type === 144 || type === 128 ){
+        let channel = msg.data[0] & 0xf;
+        
+        let note = msg.data[1];
+        let velocity = msg.data[2];
+        //console.log(type, channel, type, note, velocity)
+        if( type === 128 ){
+            //note off
+            ENVES[channel].gain.cancelScheduledValues(0);
+			ENVES[channel].gain.setTargetAtTime(0.0, 0, release );
+
+        } else {
+            //console.log("note on", equal[note], )
+            OSCIS[channel].frequency.cancelScheduledValues(0);
+			OSCIS[channel].frequency.setTargetAtTime( equal[note], 0, portamento );
+            ENVES[channel].gain.cancelScheduledValues(0);
+			ENVES[channel].gain.setTargetAtTime(1.0, 0, attack);
+        }
+    }
+}
+
+function initSynth( ){
+    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+    audiocontext = new AudioContext( );
+    for(let s = 0; s < 16; s+=1 ){
+        let oscil = audiocontext.createOscillator( );
+        let enve = audiocontext.createGain( );
+        oscil.connect( enve );
+        enve.connect( audiocontext.destination );
+        enve.gain.value = 0.0;  
+	    oscil.start(0);
+        
+        OSCIS.push(oscil);
+        ENVES.push(enve);
+    }
+    //once
+    notinitsynth = false;
+    console.log("internal Synth usable");
 }
 
 /*******************************************************************************
@@ -2040,9 +2317,10 @@ function midiInit( ){ //...
 
 function netz( elemid ){
     console.log("Tonnetz GUI");
+    
+    initSettings( );
     midiInit( );
     screenInit( ); //set globals about the screen
-    initSettings( );
 
     let thehtmltolinein = document.getElementById( elemid );
     thehtmltolinein.style.position = "fixed";//**
@@ -2065,9 +2343,13 @@ function netz( elemid ){
     //menu init
     initMenu( );
     daynight( );
+
+    //synth
+    /*if( useinternal ){
+        initSynth( );
+    }*/
     //performe happieness
     console.log("Ready for usage."); 
 }
 
 //eoffoe//
-
