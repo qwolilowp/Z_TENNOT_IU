@@ -11,7 +11,7 @@ https://www.z-tennot-iu.de
 ## Button Matrix
 ![](buttonarea.png?raw=true)
 
-Use the note value labeled hexagon to play single tones. Use the belts between hexagons to play the two connected notes. And finally you can use the encircled area to play the three notes in the corners of the area. Trajectories formed through the travel of you fingertips could consist of only the type of shape you started at, or of all kinds of shapes. MIDI note-on and note-off mapping is close to MIDI Polyphonic Expression. You can play up to three channels with one touch. If you play one tone with one finger on channel is used, if you play two tones with one finger two channels are used and finally if you play three notes with one finger three channels are used. This MIDI mapping allows up to five finger polyphonic performance.
+Use the note value labeled hexagon to play single tones. Use the belts between hexagons to play the two connected notes (harmonic interval of two tones). And finally you can use the encircled area to play the three notes in the corners of the area (a harmonic interval of three tones). Trajectories (melodic intervals) formed through the travel of you fingertips could consist of only the type of shape you started at, or of all kinds of shapes. MIDI note-on and note-off mapping is close to MIDI Polyphonic Expression. You can play up to three channels with one touch. If you play one tone with one finger on channel is used, if you play two tones with one finger two channels are used and finally if you play three notes with one finger three channels are used. This MIDI mapping allows up to five finger polyphonic performance.
 
 
 ## Main Menu
