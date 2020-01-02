@@ -34,13 +34,12 @@ MIDI / LINUX NOTE:
 *******************************************************************************/
 
 /*global touch data*/
-//let touchesOvertime = { };
-//let touchesChangedOvertime = { };
 let touchesTargetOvertime = { };
 let mixedtraj = false;
 let notesplaying = { };
 let mouseit = false;
 let howmuchreduce = 0;
+let clickedelem = null; //add a elemntmemory for clickinging
 
 /*sequnecer*/
 let passtosequencer = true;
@@ -61,6 +60,7 @@ let h = null;
 let backgrDAYNIGHT = 1; //1 day 0 night
 let strokeoftraj = "black";
 let seqtimingelem = null;
+
 //Buttons 
 let elemsize = 57; //values are reset by the init fkt
 let elemdist = 5;
@@ -1107,7 +1107,7 @@ function initMenu( ){
     let m = document.getElementById('menu');
     m.style.width = (w-120).toString()+"px";
     m.style.top = (h-m.offsetHeight).toString()+"px";
-    m.style.left = (100).toString()+"px";
+    m.style.left = Math.round(w/10).toString()+"px";
 
     m.addEventListener('touchstart', function( e ) {  e.stopImmediatePropagation(); });
     m.addEventListener('touchend', function( e ) { e.stopImmediatePropagation(); });
@@ -1152,7 +1152,7 @@ function showsubmenudiv( elemid ){
 
 function downseq( ){
     if( sequencer.length !== 0 ){
-        dodownit( JSON.stringify( sequencer ) , "sequenc"+Date.now( ).toString( )+".seq",  "application/json" );
+        dodownit( JSON.stringify( sequencer ) +"----"+ w.toString()+","+h.toString(), "sequenc"+Date.now( ).toString( )+".seq",  "application/json" );
     } else {
         alert("No Sequence to download.");
     }
@@ -1163,7 +1163,28 @@ function upseq( ){
     var reader = new FileReader();
     reader.onload = function (e) {
         seqtimingelem.innerHTML = "";
-		sequencer = JSON.parse( reader.result );
+        let ab = reader.result.split("----");
+        let wh = ab[1].split(",");
+        let wo = parseInt( wh[0] );
+        let ho = parseInt( wh[1] );
+		sequencer = JSON.parse( ab[0] );
+        //rebuild position of the sequnecer if w != w" and h != h"
+        
+        if( w !== wo || h !== ho ){
+            console.log(wo, w, ho, h);
+            let corrW = w/wo;
+            let corrH = h/ho;
+            for( let s = 0; s < sequencer.length; s+=1 ){
+                for( let elemid in sequencer[ s ][ 1 ] ){
+                    for( let t = 0; t < sequencer[ s ][ 1 ][elemid].length; t+=1 ){ 
+                        //[x, y, linewidth, strokestyle]
+                        sequencer[ s ][ 1 ][elemid][ t ][0] = Math.round( sequencer[ s ][ 1 ][elemid][ t ][0] * corrW );
+                        sequencer[ s ][ 1 ][elemid][ t ][1] = Math.round( sequencer[ s ][ 1 ][elemid][ t ][1] * corrH );
+                    }
+                }
+            }
+        }
+    
         for( let s = 0; s < sequencer.length; s+=1 ){
             addtoseqtiming( );
         }
@@ -1797,14 +1818,22 @@ function doselftouch(){
 
 //event listener klickan and mouse move - pass to touch handler
 //or convert
-let clickedelem = null;
 window.addEventListener('mousedown', function( e ) { 
-    clickedelem = e.target;
-    filthselftouch(e.pageX, e.pageY, clickedelem, 'touchstart');
+    if( mouseit ){
+        clickedelem = e.target;
+        filthselftouch( e.pageX, e.pageY, clickedelem, 'touchstart');
+    }
+});
+window.addEventListener('mousemove', function( e ) { 
+    if( mouseit ){
+        filthselftouch( e.pageX, e.pageY, clickedelem, 'touchmove');
+    }
 });
 window.addEventListener('mouseup', function( e ) { 
-    filthselftouch(e.pageX, e.pageY, clickedelem, 'touchend');
-    clickedelem = null;
+    if( mouseit ){
+        filthselftouch( e.pageX, e.pageY, clickedelem, 'touchend');
+        clickedelem = null;
+    }
 });
 /*******************************************************************************
   
