@@ -55,6 +55,13 @@
         .seqteprep input{
             font-size:10px;
         }
+        #menu *{
+            font-size:80%;
+        }
+        #menu input{
+            margin:0px;
+            padding:0px;
+        }
         </style>
 		<script type="text/javascript" src="multivitamin.js"></script>
 
@@ -98,7 +105,7 @@
                 <label for="trajrec">Selftouch</label>
                 <button type="button" id="trajrec" onclick="doselftouch();">Do</button>
                 <label for="useklickel">Use Mouse</label>
-                <input type="checkbox" id="useklickel" onclick="menumouse();">
+                <input type="checkbox" id="useklickel" onclick="menumouse();" checked>
                 <label for="buttspace">Button spacing:</label>
                 <input type="text" width="3" id="buttspace" value="" onkeyup="buttdist();">
                 
