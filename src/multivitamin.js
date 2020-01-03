@@ -1,3 +1,4 @@
+
 /*
 
 tonnetz exp 2019
@@ -229,6 +230,7 @@ let useinternal = false;
 //orientierung:
 //https://en.wikipedia.org/wiki/Harmonic_table_note_layout#/media/File:HarmonicTableMusicNoteLayout.png
 //bei dierser Anordnung gibt es zusätzlich andere Intervalle die entstehen, neben Quinten, kleinen und großen Terzen auch Septimen
+//USING HELMHOLZ NOTATION -- ONSCREEN USING SCIENTIFIC NOTATION
 let quintenterzen = [
 //18
     ["h’’’’’", "e’’’’’", "a’’’’", "d’’’’", "g’’’", "c’’’", "f’’", "ais’", "dis’", "gis", "cis", "Fis", "H#", "E#", "A##", "D##", "G###", "C###"],
@@ -979,7 +981,7 @@ function menumouse( ){
 function buttdist( ){
     if( document.getElementById('buttspace').value !== "" ){
         let elemdisttemp = parseInt( document.getElementById('buttspace').value );
-        if(elemdisttemp > 0 && elemdisttemp < 20 ){
+        if(elemdisttemp > 0 && elemdisttemp < 100 ){
             elemdist = elemdisttemp;
         }
     }
@@ -1057,10 +1059,10 @@ function addtoseqtiming( ){
     sp.className = "seqteprep";
 
     let i = document.createElement( "select" );//DELAY AFTER
-    for( let u = 0; u < 20; u+=1 ){
+    for( let u = 0; u < 30; u+=1 ){
         let o = document.createElement( "option" );
-        o.value = u*250;
-        o.innerHTML = u*250;
+        o.value = u*50;
+        o.innerHTML = u*50;
         
         i.appendChild( o );
     }
@@ -2286,53 +2288,87 @@ function midiInit( ){ //...
 let notinitsynth = true;
 let audiocontext = null;
 
-let attack=0.05;			
-let release=0.05;		
-let portamento=0.05;	
+let attack = 0.05;			
+let release = 0.05;		
+let portamento = 0.05;	
 
 
 let OSCIS = [];
 let ENVES = [];
+let FILTERS = [];
+let notesinsynth = [];
+let mastergain = null;
 
 function routeTOsynth( msg ){
     //tunings[currtunning][notenumber]
     // https://github.com/cwilso/monosynth/blob/gh-pages/index.html
     let type = msg.data[0] & 0xf0; // channel agnostic message type. Thanks, Phil Burk.
+    
+    let channel = msg.data[0] & 0xf;
     if( type === 144 || type === 128 ){
-        let channel = msg.data[0] & 0xf;
+        
         
         let note = msg.data[1];
-        let velocity = msg.data[2];
+        let velocity = msg.data[2]/128.0;
         //console.log(type, channel, type, note, velocity)
         if( type === 128 ){
             //note off
-            ENVES[channel].gain.cancelScheduledValues(0);
-			ENVES[channel].gain.setTargetAtTime(0.0, 0, release );
-
+            ENVES[channel].gain.cancelScheduledValues( 0 );
+			ENVES[channel].gain.setTargetAtTime( 0.0, 0, release );
+            notesinsynth[ channel ] = 0;
         } else {
             //console.log("note on", equal[note], )
-            OSCIS[channel].frequency.cancelScheduledValues(0);
+            OSCIS[channel].frequency.cancelScheduledValues( 0 );
+            notesinsynth[channel] = equal[note];
 			OSCIS[channel].frequency.setTargetAtTime( equal[note], 0, portamento );
-            ENVES[channel].gain.cancelScheduledValues(0);
-			ENVES[channel].gain.setTargetAtTime(1.0, 0, attack);
+            ENVES[channel].gain.cancelScheduledValues( 0 );
+			ENVES[channel].gain.setTargetAtTime( velocity, 0, attack );
+        }
+    } else {
+        let payload = msg.data[1];
+        //console.log( "t: ", type, "c: ", channel, "v: ", payload  );
+        if( notesinsynth[channel] !== 0 ){
+            let newfreq = notesinsynth[channel] + payload;
+            OSCIS[channel].frequency.cancelScheduledValues( 0 );
+	        OSCIS[channel].frequency.setTargetAtTime( newfreq, 0, portamento );
         }
     }
+    
 }
 
 function initSynth( ){
     window.AudioContext = window.AudioContext || window.webkitAudioContext;
     audiocontext = new AudioContext( );
-    for(let s = 0; s < 16; s+=1 ){
+    //audiooutput = audiocontext.createMediaStreamDestination( );
+    mastergain = audiocontext.createGain( );
+    mastergain.gain.value = 100;
+    for( let s = 0; s < 16; s+=1 ){
         let oscil = audiocontext.createOscillator( );
         let enve = audiocontext.createGain( );
+        let fil = audiocontext.createBiquadFilter( );
+			
+        //type over gui
         oscil.connect( enve );
-        enve.connect( audiocontext.destination );
-        enve.gain.value = 0.0;  
+        oscil.type = 'sawtooth';
 	    oscil.start(0);
+
+        //make available throug GUI
+        enve.gain.value = 0.0;
+        enve.connect( audiocontext.destination );
+
+        //to GUI
+        fil.frequency.value = 200;
+	    fil.Q.value = 10;
+		fil.type = 'lowpass';
+        fil.connect( enve );
         
         OSCIS.push(oscil);
         ENVES.push(enve);
+        FILTERS.push(fil);
+        notesinsynth.push(0);
     }
+    
+    //mastergain.connect( audiocontext.destination );
     //once
     notinitsynth = false;
     console.log("internal Synth usable");
