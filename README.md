@@ -79,7 +79,9 @@ to connect the virtual MIDI cable, depending on you setup.
 On Windows you might use a additional software to create virtual MIDI ports. We have tested virtualMIDI (get it from https://www.tobias-erichsen.de/software/virtualmidi.html)
 
 ## Notes
-Use the fullscreen mode of the browser to expand the button area.
+* Use the fullscreen mode of the browser to expand the button area.
+* No WebMidi, try the polyfill: https://github.com/cwilso/WebMIDIAPIShim
+
 
 # Looks like?
 ![](a5..png?raw=true)
