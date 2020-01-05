@@ -1,4 +1,3 @@
-
 /*
 
 tonnetz exp 2019
@@ -1570,69 +1569,71 @@ window.addEventListener('touchmove', function( e ) {
         let elemunder = document.elementFromPoint( ix, iy );
         let realy = "";
         
-        if( mixedtraj ){
-            elemunder.setAttribute( 'fill' , "#fff"  );
-            realy = elemunder.getAttribute("title");
-            setTimeout(function(){elemunder.setAttribute( 'fill' , elemunder.getAttribute("name")  );},200);
-        } else {
-            let ideleunder = elemunder.id;
-            if( ideleunder[ideleunder.length-2] == idofelem[idofelem.length-2] ){
+        if( elemunder !== null){
+            if( mixedtraj ){
                 elemunder.setAttribute( 'fill' , "#fff"  );
-                realy = elemunder.getAttribute("title");
+                realy = elemunder.getAttribute( "title" );
                 setTimeout(function(){elemunder.setAttribute( 'fill' , elemunder.getAttribute("name")  );},200);
+            } else {
+                let ideleunder = elemunder.id;
+                if( ideleunder[ideleunder.length-2] == idofelem[idofelem.length-2] ){
+                    elemunder.setAttribute( 'fill' , "#fff"  );
+                    realy = elemunder.getAttribute("title");
+                    setTimeout(function(){elemunder.setAttribute( 'fill' , elemunder.getAttribute("name")  );},200);
+                }
             }
-        }
-        //MIDI    
-        //if last note in midinotes playing != the note of the elemnt under the touchpos add the note and send midid start
-        if( realy !== "" ){
-            let currnotes = realy.split( "," );
-            let timestamp = Date.now( );
-            if( notesplaying[idofelem] ){
-                if( notesplaying[idofelem].length !== 0 ){
-                    if( notesplaying[idofelem][notesplaying[idofelem].length-1][0].join("") != currnotes.join("") ){
-                        let lastNOTEsWere = notesplaying[idofelem].length-1;
-                        let channeloffset = notesplaying[idofelem][lastNOTEsWere][2];
-                        //update timing and sendoff to last notes
-                        if( notesplaying[idofelem][lastNOTEsWere][3] === undefined ){
-                            notesplaying[idofelem][lastNOTEsWere][3] = timestamp; //set end timestamp
-                        } 
-                        notesplaying[idofelem][lastNOTEsWere][4] = 
-                            notesplaying[idofelem][lastNOTEsWere][3] - notesplaying[idofelem][lastNOTEsWere][1];
-                        
-                        let VEL_VAL = FULL_VEL;
-                        if( jesnovel && jesnogest ){
-                            let lasttartou = touchesTargetOvertime[ idofelem ][touchesTargetOvertime[ idofelem ].length-1][0];
-                            let xx = Math.abs( ix - lasttartou[lasttartou.length-1].pageX);
-                            let yy = Math.abs( iy - lasttartou[lasttartou.length-1].pageY);
-                            let s = Math.sqrt((xx*xx)+(yy*yy));
-                            VEL_VAL = Math.min( 127, Math.round((s/notesplaying[idofelem][lastNOTEsWere][4]) *1000 ) );
-                            //console.log(s, notesplaying[idofelem][lastNOTEsWere][4], VEL_VAL )
+            //MIDI    
+            //if last note in midinotes playing != the note of the elemnt under the touchpos add the note and send midid start
+            if( realy !== "" && realy !== null ){
+                let currnotes = realy.split( "," );
+                let timestamp = Date.now( );
+                if( notesplaying[idofelem] ){
+                    if( notesplaying[idofelem].length !== 0 ){
+                        if( notesplaying[idofelem][notesplaying[idofelem].length-1][0].join("") != currnotes.join("") ){
+                            let lastNOTEsWere = notesplaying[idofelem].length-1;
+                            let channeloffset = notesplaying[idofelem][lastNOTEsWere][2];
+                            //update timing and sendoff to last notes
+                            if( notesplaying[idofelem][lastNOTEsWere][3] === undefined ){
+                                notesplaying[idofelem][lastNOTEsWere][3] = timestamp; //set end timestamp
+                            } 
+                            notesplaying[idofelem][lastNOTEsWere][4] = 
+                                notesplaying[idofelem][lastNOTEsWere][3] - notesplaying[idofelem][lastNOTEsWere][1];
+                            
+                            let VEL_VAL = FULL_VEL;
+                            if( jesnovel && jesnogest ){
+                                let lasttartou = touchesTargetOvertime[ idofelem ][touchesTargetOvertime[ idofelem ].length-1][0];
+                                let xx = Math.abs( ix - lasttartou[lasttartou.length-1].pageX);
+                                let yy = Math.abs( iy - lasttartou[lasttartou.length-1].pageY);
+                                let s = Math.sqrt((xx*xx)+(yy*yy));
+                                VEL_VAL = Math.min( 127, Math.round((s/notesplaying[idofelem][lastNOTEsWere][4]) *1000 ) );
+                                //console.log(s, notesplaying[idofelem][lastNOTEsWere][4], VEL_VAL )
+                            }
+                            // do midi
+                            for (let out of Midioutputs.values() ){
+                                if( theMIDIout === out.name || sendtoall ){
+                                    for( let i = 0; i < notesplaying[idofelem][lastNOTEsWere][0].length; i+=1 ){
+                                        let nnn = parseInt(notesplaying[idofelem][lastNOTEsWere][0][i]);
+                                        out.send([NOTE_OFFS[channeloffset][i], nnn, ZERO_VEL]);
+                                    }
+                                    //send on to new
+                                    for( let i = 0; i < currnotes.length; i+=1 ){
+                                        let nnn = parseInt(currnotes[i]);
+                                        out.send([NOTE_ONS[channeloffset][i], nnn, VEL_VAL]);
+                                    }
+                                }            
+                            }
+                            //do add notes and
+                            if( notesplaying[idofelem] ){
+                                notesplaying[idofelem].push( [currnotes, timestamp, channeloffset, , , VEL_VAL, ix, iy] );
+                            } else {
+                                notesplaying[idofelem] = [ [currnotes, timestamp, channeloffset, , , VEL_VAL, ix, iy] ];
+                            }
                         }
-                        // do midi
-                        for (let out of Midioutputs.values() ){
-                            if( theMIDIout === out.name || sendtoall ){
-                                for( let i = 0; i < notesplaying[idofelem][lastNOTEsWere][0].length; i+=1 ){
-                                    let nnn = parseInt(notesplaying[idofelem][lastNOTEsWere][0][i]);
-                                    out.send([NOTE_OFFS[channeloffset][i], nnn, ZERO_VEL]);
-                                }
-                                //send on to new
-                                for( let i = 0; i < currnotes.length; i+=1 ){
-                                    let nnn = parseInt(currnotes[i]);
-                                    out.send([NOTE_ONS[channeloffset][i], nnn, VEL_VAL]);
-                                }
-                            }            
+                        //storage    
+                        touchesTargetOvertime[ idofelem ].push( [e.targetTouches,timestamp,elemunder.getAttribute("name"),elemunder.getAttribute("title")] );    
+                        if( touchesTargetOvertime[ idofelem ].length % 2 == 0 ){
+                            drawTouch( idofelem );
                         }
-                        //do add notes and
-                        if( notesplaying[idofelem] ){
-                            notesplaying[idofelem].push( [currnotes, timestamp, channeloffset, , , VEL_VAL, ix, iy] );
-                        } else {
-                            notesplaying[idofelem] = [ [currnotes, timestamp, channeloffset, , , VEL_VAL, ix, iy] ];
-                        }
-                    }
-                    //storage    
-                    touchesTargetOvertime[ idofelem ].push( [e.targetTouches,timestamp,elemunder.getAttribute("name"),elemunder.getAttribute("title")] );    
-                    if( touchesTargetOvertime[ idofelem ].length % 2 == 0 ){
-                        drawTouch( idofelem );
                     }
                 }
             }
@@ -2297,7 +2298,7 @@ let OSCIS = [];
 let ENVES = [];
 let FILTERS = [];
 let notesinsynth = [];
-let mastergain = null;
+//let mastergain = null;
 
 function routeTOsynth( msg ){
     //tunings[currtunning][notenumber]
@@ -2325,40 +2326,84 @@ function routeTOsynth( msg ){
 			ENVES[channel].gain.setTargetAtTime( velocity, 0, attack );
         }
     } else {
-        let payload = msg.data[1];
+        let payload = Math.round(msg.data[1]/10);
         //console.log( "t: ", type, "c: ", channel, "v: ", payload  );
         if( notesinsynth[channel] !== 0 ){
-            let newfreq = notesinsynth[channel] + payload;
+            //console.log( "t: ", type, "c: ", channel, "v: ", payload  );
+            //let newfreq = notesinsynth[channel] + payload;
             OSCIS[channel].frequency.cancelScheduledValues( 0 );
-	        OSCIS[channel].frequency.setTargetAtTime( newfreq, 0, portamento );
+	        //OSCIS[channel].frequency.setTargetAtTime( newfreq, 0, portamento );
+            OSCIS[channel].detune.setValueAtTime( payload, 0 );
         }
     }
     
+}
+
+function changeWaveForm( ){
+    let newtype = document.getElementById("wavesel").options[ document.getElementById("wavesel").selectedIndex ].value;
+    for( let c in OSCIS ){
+        OSCIS[c].type = newtype;
+    } 
+}
+
+function changeQ( ){
+    let newQ = parseFloat( document.getElementById("filterQ").value );
+    if( newQ !== NaN ){
+        if( newQ < 0.0001){
+            newQ = 0.0001;
+        }
+        if( newQ > 1000.0 ){
+            newQ = 1000.0;
+        }
+        for( let f in FILTERS ){
+            FILTERS[f].Q.value = newQ;
+        }
+    }
+}
+
+function changeF( ){
+    let newF = parseInt( document.getElementById("filterF").value );
+    if( newF !== NaN ){
+        if( newF < 0){
+            newF = 0;
+        }
+        if( newF > 30000 ){
+            newF = 30000;
+        }
+        
+        for( let f in FILTERS ){
+            FILTERS[f].frequency.value = newF;
+        }
+    }
+}
+
+function changeFilType( ){
+    let newtype = document.getElementById("filsel").options[ document.getElementById("filsel").selectedIndex ].value;
+    for( let f in FILTERS ){
+        FILTERS[f].type = newtype;
+    }
 }
 
 function initSynth( ){
     window.AudioContext = window.AudioContext || window.webkitAudioContext;
     audiocontext = new AudioContext( );
     //audiooutput = audiocontext.createMediaStreamDestination( );
-    mastergain = audiocontext.createGain( );
-    mastergain.gain.value = 100;
+    //mastergain = audiocontext.createGain( );
+    //mastergain.gain.value = 100;
     for( let s = 0; s < 16; s+=1 ){
         let oscil = audiocontext.createOscillator( );
         let enve = audiocontext.createGain( );
         let fil = audiocontext.createBiquadFilter( );
 			
-        //type over gui
         oscil.connect( enve );
         oscil.type = 'sawtooth';
 	    oscil.start(0);
 
-        //make available throug GUI
         enve.gain.value = 0.0;
         enve.connect( audiocontext.destination );
 
-        //to GUI
-        fil.frequency.value = 200;
-	    fil.Q.value = 10;
+        fil.frequency.value = 10;
+	    fil.Q.value = 10.0;
 		fil.type = 'lowpass';
         fil.connect( enve );
         
