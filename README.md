@@ -49,7 +49,18 @@ The visual feedback provided by the sequencer is a point mirrored picture of the
 ## internal Synth Menu
 ![](synth.png?raw=true)
 
-To test the button matrix one can use a simple muilt oszillator WebAudio synth. The checkbox enables or diables the internal playback.
+To test the button matrix one can use a simple muilt oszillator WebAudio synth. The checkbox enables or disables the internal playback. The selection is not part if the presets, since user interactio is forced by the WebAudio implementation.
+
+### Sound
+Use the Pulldown to change the charcteristic of all oscillators.
+
+### Gesture mapping
+The mapping of the gesture values (through Channelaftertouch and Note Velocity) is as follwos:
+
+Movement/Gesture | MIDI | internal Synth
+-------- | -------- | --------
+trajectory speed | Note Venocity | oscillator gain
+curvature | Channel Aftertouch | detune of all active osicillators
 
 ## Notes
 Use the fullscreen mode of the browser to expand the button area.
