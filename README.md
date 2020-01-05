@@ -46,6 +46,8 @@ Example sequences are hosted in the seqs folder.
 
 The visual feedback provided by the sequencer is a point mirrored picture of the input trajectory. Small lines guide you back to where the input took place.
 
+# Example Synthesizers
+
 ## internal Synth Menu
 ![](synth.png?raw=true)
 
@@ -65,14 +67,23 @@ curvature | Channel Aftertouch | detune of all active osicillators
 ## Notes
 Use the fullscreen mode of the browser to expand the button area.
 
-# Example Sequencer
+
 
 ## PD
-The first example software synthesizer is made with pure data (PD). You can find PD examples in the PDsynth folder. The sequencer takes note-on and -off messages and channel after touch messages. It has 15 voices or let say oscillators and a additional 15 oscillators for modulation. The output is a signal sum and that is it. On linux you might use the command
+The first example software synthesizer is made with pure data (PD). You can find PD examples in the PDsynth folder. The sequencer takes note-on and -off messages and channel after touch messages. It has 15 voices or let say oscillators and a additional 15 oscillators for modulation. The output is a signal sum and that is it. 
+
+### on Linux
+
+On linux you might use the command
 
 aconnect 'Midi Through' 'Pure Data'
 
 to connect the virtual MIDI cable, depending on you setup.
+
+### on Windows
+
+On Windows you might use a additional software to create virtual MIDI ports. We tested virtualMIDI (get from https://www.tobias-erichsen.de/software/virtualmidi.html)
+
 
 # Looks like?
 ![](a5..png?raw=true)
