@@ -54,10 +54,10 @@ The visual feedback provided by the sequencer is a point mirrored picture of the
 To test the button matrix one can use a simple muilt oszillator WebAudio synth. The checkbox enables or disables the internal playback. The selection is not part if the presets, since user interactio is forced by the WebAudio implementation.
 
 ### Sound
-Use the Pulldown to change the charcteristic of all oscillators.
-
+Use the pulldown label "Waveform" to change the charcteristic of all oscillators. Use the pulldown labeled "Filtertype" to change the filter chraacteristic of all active filters. Input Q Factor (0.0001 - 1000.0) of all filters and input the cutoff / center frequency of the filter.
+ 
 ### Gesture mapping
-The mapping of the gesture values (through Channelaftertouch and Note Velocity) is as follwos:
+The mapping of the gesture values is as follwos:
 
 Movement/Gesture | MIDI | internal Synth
 -------- | -------- | --------
@@ -66,7 +66,7 @@ curvature | Channel Aftertouch | detune of all active osicillators
 
 
 ## PD
-The first example software synthesizer is made with pure data (PD). You can find PD examples in the PDsynth folder. The sequencer takes note-on and -off messages and channel after touch messages. It has 15 voices or let say oscillators and a additional 15 oscillators for modulation. The output is a signal sum and that is it. 
+The first example software synthesizer is made with pure data (PD). You can find PD examples in the PDsynth folder. The sequencer takes note-on and -off messages and channel-aftertouch messages. It has 15 voices or let say oscillators and a additional 15 oscillators for modulation. The output is a signal sum and that is it. 
 
 ### on Linux
 On linux you might use the command
