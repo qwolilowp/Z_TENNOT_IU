@@ -82,6 +82,7 @@ On Windows you might use a additional software to create virtual MIDI ports. We 
 * Use Chrome, there are Issues with other browsers.
 * Use the fullscreen mode of the browser to expand the button area.
 * No WebMidi, try the polyfill: https://github.com/cwilso/WebMIDIAPIShim
+* Since this https://www.fxsitecompat.dev/en-CA/docs/2019/legacy-touch-events-api-is-now-disabled-on-desktop/ is a problem we moved to PointerEvent API
 
 
 # Looks like?
