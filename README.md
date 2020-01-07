@@ -29,6 +29,8 @@ The MIDI menu let you control the hardware / software midi output the program sh
 
 This menu is related to the user interface. You can choose if a path or trajectory you form with your touches has only a single type of note play (for example just hexagon buttons) or could be a mixture of all possible button forms. You can choose between a white and a black background. And there is a touch simulation called "selftouch" for testing purpose.
 
+If you like to test the software with your mouse or touchpad, enable the "Use Mouse" checkbox. To shrink the hexagons increase the value of "Button Spacing".
+
 ## Gesture Menu
 ![](gest.png?raw=true)
 
