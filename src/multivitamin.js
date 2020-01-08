@@ -40,6 +40,7 @@ let notesplaying = { };
 let mouseit = false;
 let howmuchreduce = 0;
 let clickedelem = null; //add a elemntmemory for clickinging
+let clickedelemid = null; //add a start elem id for pointerEvents Other than touch
 
 /*sequnecer*/
 let passtosequencer = true;
@@ -1102,7 +1103,7 @@ function initMenu( ){
     document.getElementById('basestring').value = OSCstring;
     document.getElementById('gestmodu').checked = jesnomodulation;
     //document.getElementById('internalsynthsw').checked = useinternal;
-    document.getElementById('useklickel').checked = mouseit;
+    //document.getElementById('useklickel').checked = mouseit;
     document.getElementById("buttspace").value = parseInt(elemdist);
     //position of menu
     let m = document.getElementById('menu');
@@ -1194,9 +1195,11 @@ function upseq( ){
 }
 
 function play( ){
-    doplay = true;
-    TOstorage( );
-    sequencerstep( );
+    if(!doplay){
+        doplay = true;
+        TOstorage( );
+        sequencerstep( );
+    }
 }
 
 function pause( ){
@@ -1237,8 +1240,7 @@ function clearseq( ){
     TOstorage( );
 }
 
-function delmuted( ){ //works?
-    //console.log(sequencer);
+function delmuted( ){ 
     for( let z = 0; z < seqtimingelem.children.length; z+=1 ){
         if( !seqtimingelem.children[ z ].children[ 1 ].checked ){
             seqtimingelem.removeChild(seqtimingelem.children[ z ]);
@@ -1246,7 +1248,6 @@ function delmuted( ){ //works?
             console.log("deled from seq:", z);
         }
     }
-    //console.log(sequencer);
     HplaceMenu( );
 }
 
@@ -1255,9 +1256,6 @@ function delmuted( ){ //works?
                    SEQUENCER
 
 *******************************************************************************/
-function delfromseq( elem ){
-    console.log("not imple now");
-}
 
 function fromseqtomidi( seqframeI ){
     let seqframe = seqframeI+0;
@@ -1274,7 +1272,6 @@ function fromseqtomidi( seqframeI ){
     for( let elemid in sequencer[ seqframe ][ 0 ] ){
         if( sequencer[ seqframe ][ 0 ][ elemid ].length > 0 ){
         let durr =  sequencer[ seqframe ][ 0 ][ elemid ][ 0 ][ 1 ] - minstarttime;
-        //console.log("startof traj in seqframe", durr, minstarttime)
         for( let n = 0; n < sequencer[ seqframe ][ 0 ][ elemid ].length; n+=1 ){
             let notedurr = sequencer[ seqframe ][ 0 ][ elemid ][ n ][ 4 ];
             let channeloffset = sequencer[ seqframe ][ 0 ][ elemid ][ n ][ 2 ];
@@ -1394,25 +1391,28 @@ function sequencerstep( ){
             let maxdura = 0;
             for( let elemid in sequencer[ seqplaying ][0] ){
                 let compdura = 0;
-                for( let n = 0; n < sequencer[ seqplaying ][0][ elemid ].length; n+=1 ){
-                    compdura += sequencer[ seqplaying ][0][ elemid ][n][4];
-                }
                 //only single note playing
-                if( sequencer[ seqplaying ][0][ elemid ].length == 1 ){
+                if( sequencer[ seqplaying ][0][ elemid ].length === 1 ){
                     compdura = sequencer[ seqplaying ][0][ elemid ][0][4];
+                } else {
+                    for( let n = 0; n < sequencer[ seqplaying ][0][ elemid ].length; n+=1 ){
+                        compdura += sequencer[ seqplaying ][0][ elemid ][n][4];
+                    }
                 }
+                
                 if( maxdura < compdura ){
                     maxdura = compdura;
                 }
             }
+            
             if( maxdura > 0 ){
                 currduration = maxdura;
             } else {
                 currduration = 1000;
             }
+            
             let delayelem = seqtimingelem.children[ seqplaying ].children[ 0 ];
             let delay = parseInt( delayelem.options[ delayelem.selectedIndex ].value );
-            
             setTimeout( function(){ sequencerstep(); }, currduration+delay );
 
             //a thread why not???
@@ -1534,7 +1534,7 @@ function drawallTouch( ){
 
 function drawTouch( elemid ){
     //draw currend trajectories
-    for( let t = 0; t < touchesTargetOvertime[elemid].length-1; t+=1 ){ //there is only one touch in touchlist per time when only one touch is per target - is this right?????
+    for( let t = 0; t < touchesTargetOvertime[elemid].length-1; t+=1 ){
         trajcon.beginPath();
         trajcon.lineWidth = touchesTargetOvertime[elemid][t][3].split(",").length*2;
         trajcon.strokeStyle = strokeoftraj;
@@ -1546,30 +1546,33 @@ function drawTouch( elemid ){
     
 }
 
-window.addEventListener('touchmove', function( e ) {
+function pointermoveEvfkt( e ) {
     e.preventDefault();
-    e.stopPropagation();
+    e.stopPropagation(); 
     e.stopImmediatePropagation();
-    if( window.visualViewport.scale !== 1 ){
+    /*if( window.visualViewport.scale !== 1 ){
         let zoomfak = 1/window.visualViewport.scale;
         let offsetLeft = window.visualViewport.offsetLeft/10;
-        //console.log( "zoomfak", zoomfak, "" );
         let offsetTop =  -window.visualViewport.offsetTop/10;
         mainsvgelem.style.transform = 'translate(' +
                               offsetLeft + 'px,' +
                               offsetTop + 'px) ' +
                               'scale(' + zoomfak + ')';
 
-    }
-    if( e.target.getAttribute("title") ){
+    }*/
+    if( e.target.getAttribute("title") && clickedelem !== null ){
         // Feedback
         let idofelem = e.target.getAttribute('id');
-        let ix = e.targetTouches[e.targetTouches.length-1].pageX;
-        let iy = e.targetTouches[e.targetTouches.length-1].pageY;
+        let ix = e.pageX;
+        let iy = e.pageY;
         let elemunder = document.elementFromPoint( ix, iy );
+        if( e.pointerType !== "touch" ){
+            idofelem = clickedelem.getAttribute('id');
+            elemunder = e.target;
+        }
         let realy = "";
         
-        if( elemunder !== null){
+        if( elemunder !== null ){
             if( mixedtraj ){
                 elemunder.setAttribute( 'fill' , "#fff"  );
                 realy = elemunder.getAttribute( "title" );
@@ -1586,7 +1589,7 @@ window.addEventListener('touchmove', function( e ) {
             //if last note in midinotes playing != the note of the elemnt under the touchpos add the note and send midid start
             if( realy !== "" && realy !== null ){
                 let currnotes = realy.split( "," );
-                let timestamp = Date.now( );
+                let timestamp = e.timeStamp;
                 if( notesplaying[idofelem] ){
                     if( notesplaying[idofelem].length !== 0 ){
                         if( notesplaying[idofelem][notesplaying[idofelem].length-1][0].join("") != currnotes.join("") ){
@@ -1605,8 +1608,7 @@ window.addEventListener('touchmove', function( e ) {
                                 let xx = Math.abs( ix - lasttartou[lasttartou.length-1].pageX);
                                 let yy = Math.abs( iy - lasttartou[lasttartou.length-1].pageY);
                                 let s = Math.sqrt((xx*xx)+(yy*yy));
-                                VEL_VAL = Math.min( 127, Math.round((s/notesplaying[idofelem][lastNOTEsWere][4]) *1000 ) );
-                                //console.log(s, notesplaying[idofelem][lastNOTEsWere][4], VEL_VAL )
+                                VEL_VAL = Math.min( 127, Math.round((s/(notesplaying[idofelem][lastNOTEsWere][4]/100)) * 13 ) );
                             }
                             // do midi
                             for (let out of Midioutputs.values() ){
@@ -1629,8 +1631,8 @@ window.addEventListener('touchmove', function( e ) {
                                 notesplaying[idofelem] = [ [currnotes, timestamp, channeloffset, , , VEL_VAL, ix, iy] ];
                             }
                         }
-                        //storage    
-                        touchesTargetOvertime[ idofelem ].push( [e.targetTouches,timestamp,elemunder.getAttribute("name"),elemunder.getAttribute("title")] );    
+                        //storage  
+                        touchesTargetOvertime[ idofelem ].push( [[e],timestamp,elemunder.getAttribute("name"),elemunder.getAttribute("title")] );   
                         if( touchesTargetOvertime[ idofelem ].length % 2 == 0 ){
                             drawTouch( idofelem );
                         }
@@ -1639,33 +1641,35 @@ window.addEventListener('touchmove', function( e ) {
             }
         }
     }
-}, false);
+}
 
-window.addEventListener('touchstart', function( e ) { 
+function pointerdownEventFkt( e ) { 
     //default behavior
     e.preventDefault();
     e.stopPropagation(); 
     e.stopImmediatePropagation();
+    
     let channeloffset = null;
     if( MIDIchanOffAvailable.length !== 0 ){
         channeloffset = MIDIchanOffAvailable.pop();
     }
     if( e.target.getAttribute("title") && channeloffset !== null ){
         let idofelem = e.target.getAttribute('id');
+        clickedelem = e.target;
         let currnotes = e.target.getAttribute("title").split(",");
-        let timestamp = Date.now();
+        let timestamp = e.timeStamp;
         for (let out of Midioutputs.values() ){
             if( theMIDIout === out.name || sendtoall ){
                 for( let i = 0; i < currnotes.length; i+=1 ){
                     let nnn = parseInt(currnotes[i]);
                     out.send([NOTE_ONS[channeloffset][i], nnn, FULL_VEL]);
                 }
-                
             }            
         }
-        let ix = e.targetTouches[e.targetTouches.length-1].pageX;
-        let iy = e.targetTouches[e.targetTouches.length-1].pageY;
-        if( notesplaying[idofelem] ){
+        let ix = e.pageX;
+        let iy = e.pageY;
+        
+        if( notesplaying[ idofelem ] ){
             notesplaying[ idofelem ].push( [currnotes, timestamp, channeloffset, , , FULL_VEL, ix, iy ] );
         } else {
             notesplaying[ idofelem ] = [ [currnotes, timestamp, channeloffset, , , FULL_VEL, ix, iy ] ];
@@ -1675,28 +1679,33 @@ window.addEventListener('touchstart', function( e ) {
         //storage
         if( touchesTargetOvertime[ idofelem ] ){
             touchesTargetOvertime[ idofelem ].push( 
-                [e.targetTouches, timestamp,e.target.getAttribute("name"),e.target.getAttribute("title")] );    
+               [[e], timestamp, e.target.getAttribute("name"), e.target.getAttribute("title")] );    
         } else {
-            touchesTargetOvertime[ idofelem ] = [[e.targetTouches,timestamp,e.target.getAttribute("name"),e.target.getAttribute("title")]]; 
+            touchesTargetOvertime[ idofelem ] = [[[e],timestamp,e.target.getAttribute("name"),e.target.getAttribute("title")]]; 
         }  
     }
-}, false);
+}
 
-window.addEventListener('touchend', function( e ) {   
+function pointerupEventFkt( e ) {  
     //default behavior 
     e.preventDefault();
     e.stopPropagation(); 
     e.stopImmediatePropagation();
+    
     let idofelem = e.target.getAttribute('id');
+    if( e.pointerType !== "touch" ){
+        idofelem = clickedelem.getAttribute('id');
+    }
+    
     if( e.target.getAttribute("title") && notesplaying[idofelem] ){
         if( notesplaying[idofelem].length !== 0 ){
-            let timestamp = Date.now();
+            let timestamp = e.timeStamp;
             //preparation for restart a seq frame
             for( let eid in notesplaying ){ //alles durchgucken, ob noch was keine endezeit hat
                 for( let l = 0; l < notesplaying[ eid ].length; l+=1 ){
                     if( notesplaying[eid][l][3] === undefined ){
                         notesplaying[eid][l][3] = timestamp; //set endtime on last note
-                        notesplaying[eid][l][4] = notesplaying[eid][l][3]- notesplaying[eid][l][1];
+                        notesplaying[eid][l][4] = notesplaying[eid][l][3] - notesplaying[eid][l][1];
                     }
                 }
             }
@@ -1704,12 +1713,11 @@ window.addEventListener('touchend', function( e ) {
             for( let out of Midioutputs.values() ) {
                 if( theMIDIout === out.name || sendtoall ){
                     for( let l = 0; l < notesplaying[idofelem].length; l+=1 ){
-                        for(let partnotes = 0; partnotes < notesplaying[idofelem][l][0].length; partnotes+=1 ){
+                        for( let partnotes = 0; partnotes < notesplaying[idofelem][l][0].length; partnotes+=1 ){
                             out.send( [ NOTE_OFFS[ notesplaying[idofelem][l][2] ][ partnotes ], 
                                         notesplaying[idofelem][l][0][partnotes], 
                                         ZERO_VEL ]); 
                         }
-                        notesplaying[idofelem][l][3] = timestamp; //set endtime on last note
                     }  
                 }         
             }
@@ -1736,7 +1744,6 @@ window.addEventListener('touchend', function( e ) {
                             let l2 = Math.sqrt((vx2*vx2)+(vy2*vy2));
                             let curvature = Math.min(127,Math.round((Math.acos( (scalarProd( [vx1, vy1], [vx2, vy2] ))/( l1*l2)) * (180 / Math.PI))*(380/128))) ;
                             notesplaying[ nono ][l].push( curvature ); //8ter index
-                            //console.log("AFtertouch created", curvature, l1, l2);
                         }
                         if( notesplaying[ nono ][0].length !== 9 ){
                                 notesplaying[ nono ][0].push(notesplaying[ nono ][1][8]); //setze  naechstes in erstes
@@ -1752,29 +1759,34 @@ window.addEventListener('touchend', function( e ) {
             }
             //reset and household
             MIDIchanOffAvailable.push( notesplaying[idofelem][0][2] );//push back/free the midichanneloffset 
-            notesplaying[idofelem] = [];
+            notesplaying[ idofelem ] = [];
             touchesTargetOvertime[ idofelem ] = []; 
             //interaction//vis feedback
             e.target.setAttribute( 'fill' , e.target.getAttribute("name")  );
+            
             //check if other notesareplaying and reject all but last note
-            let newtimestamp = Date.now( );
+            //let newtimestamp = Date.now( );
+            let wasnotin = true; 
             for( let eid in notesplaying ){
-                if( notesplaying[ eid ].length > 1){
+                if( notesplaying[ eid ].length > 0 ){
                     let lastnote = notesplaying[ eid ][notesplaying[ eid ].length-1];
-                    lastnote[1] = newtimestamp;
+                    lastnote[1] = timestamp;
+                    lastnote[3] = undefined;
                     notesplaying[ eid ] = [lastnote];
-                } else if( notesplaying[idofelem].length == 1 ){
-                    notesplaying[ eid ][0][1] = newtimestamp;
-                }
+                    wasnotin = false;
+                } 
+            } 
+            if( wasnotin ){
+                clickedelem = null;
             }
         }
     }
-}, false);
+}
 
 //SIMULATE a touch
-function filthselftouch(x, y, element, eventType) {
+/*function filthselftouch(x, y, element, eventType) {
     try{
-      const touchObj = new Touch({
+      let touchObj = new Touch({
         identifier: Date.now(),
         target: element,
         pageX: x,
@@ -1784,7 +1796,8 @@ function filthselftouch(x, y, element, eventType) {
         rotationAngle: 10,
         force: 1.0,
       });
-      const touchEvent = new TouchEvent(eventType, {
+        
+      let touchEvent = new TouchEvent(eventType, {
         cancelable: true,
         bubbles: true,
         touches: [touchObj],
@@ -1817,10 +1830,11 @@ function doselftouch(){
     filthselftouch(x1, y1+i, elem1, 'touchend');
     filthselftouch(x2, y2+i, elem2, 'touchend');
 }
-
+*/
 
 //event listener klickan and mouse move - pass to touch handler
 //or convert
+/*
 window.addEventListener('mousedown', function( e ) { 
     if( mouseit ){
         clickedelem = e.target;
@@ -1838,6 +1852,7 @@ window.addEventListener('mouseup', function( e ) {
         clickedelem = null;
     }
 });
+*/
 /*******************************************************************************
   
               GUI Building
@@ -1857,42 +1872,6 @@ function buidlbotton( cx, cy, r, titletext, svgns, cocol, colstro, atext ){
         cici.setAttribute( 'r'    , r         );
         cici.textContent = atext;
     return cici;
-}
-
-function getTriangleGradient( c1, c2, c3 ){
-    /*
-VERSION 2
-    <defs>
-
-      <linearGradient id="fadeA-1" gradientUnits="userSpaceOnUse" x1="50.000000" y1="0.000000" x2="50.000000" y2="86.600000">
-        <stop offset="0%" stop-color="#FF0000"/>
-        <stop offset="100%" stop-color="#000000" />
-      </linearGradient>
-      <linearGradient id="fadeB-1" gradientUnits="userSpaceOnUse" x1="0.000000" y1="86.60000" x2="75.000000" y2="43.300000">
-        <stop offset="0%" stop-color="#00FF00"/>
-        <stop offset="100%" stop-color="#000000" />
-      </linearGradient>
-      <linearGradient id="fadeC-1" gradientUnits="userSpaceOnUse" x1="100.000000" y1="86.60000" x2="25.000000" y2="43.300000">
-        <stop offset="0%" stop-color="#0000FF"/>
-        <stop offset="100%" stop-color="#000000" />
-      </linearGradient>
-
-      <path id="pathA-1" d="M 50.000000,0.000000 L 0.000000,86.600000 100.000000,86.600000 Z" fill="url(#fadeA-1)"/>
-      <path id="pathB-1" d="M 50.000000,0.000000 L 0.000000,86.600000 100.000000,86.600000 Z" fill="url(#fadeB-1)"/>
-      <filter id="Default">
-        <feImage xlink:href="#pathA-1" result="layerA" x="0" y="0" />
-        <feImage xlink:href="#pathB-1" result="layerB" x="0" y="0" />
-        <feComposite in="layerA" in2="layerB" operator="arithmetic" k1="0" k2="1.0" k3="1.0" k4="0" result="temp"/>
-        <feComposite in="temp" in2="SourceGraphic"   operator="arithmetic" k1="0" k2="1.0" k3="1.0" k4="0"/>
-      </filter>
-    </defs>
-*/
-
-    /*let d = document.createElementNS( xmlns, 'defs' );
-    let g1 = document.createElementNS( xmlns, 'linearGradient' );
-    let g2 = document.createElementNS( xmlns, 'linearGradient' );
-    let g3 = document.createElementNS( xmlns, 'linearGradient' );*/
-    //return d; //return gradient and ID
 }
 
 function getDreiklang( cx, cy, r, incw, inch, n0, nq, nt1, nt2, cocol, colstro ){
@@ -2139,7 +2118,6 @@ function buildUIbuttons( msvg ){ //vertival display better perf
             //
             let randcolor = midiNotesCOLOR[ notename ][0];
             let randcolor2 = midiNotesCOLOR[ notename ][1];
-            //console.log(notename, midiNotes[ notename ], notenameQ, midiNotes[ notenameQ ], notenameT1, midiNotes[ notenameT1 ], notenameT2, midiNotes[ notenameT2 ])
             if( alternate % 2 == 0 ){
                 msvg.appendChild( getZweiklang( x, y, elemradius, incforW, incforH, midiNotes[ notename ], midiNotes[ notenameQ ], midiNotes[ notenameT1 ], midiNotes[ notenameT2 ], randcolor, randcolor2 ) );
             } else {
@@ -2222,6 +2200,11 @@ function getsvgMAINELEM( ){
 }
 
 function screenInit( ){
+    //add event listener
+    document.getElementById("hereitlives").addEventListener('pointerup', function( e ){ pointerupEventFkt(e); }, false);
+    document.getElementById("hereitlives").addEventListener('pointermove', function( e ){ pointermoveEvfkt(e); }, false);
+    document.getElementById("hereitlives").addEventListener('pointerdown', function( e ){ pointerdownEventFkt(e); }, false);
+
     w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 	h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
     //and color
@@ -2232,7 +2215,6 @@ function screenInit( ){
     //
     elemcount = quintenterzen[0].length;
     elemsize = Math.abs(Math.round(Math.max(w,h) / (2*elemcount))-elemdist);
-    //console.log(elemsize, elemdist)
 }
 /*******************************************************************************
    
@@ -2310,8 +2292,7 @@ function routeTOsynth( msg ){
         
         
         let note = msg.data[1];
-        let velocity = msg.data[2]/128.0;
-        //console.log(type, channel, type, note, velocity)
+        let velocity = msg.data[2] / 128.0;
         if( type === 128 ){
             //note off
             ENVES[channel].gain.cancelScheduledValues( 0 );
