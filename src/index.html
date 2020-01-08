@@ -77,14 +77,14 @@
             <button type="button" onclick="showseqmenu();">Sequencer</button>
                         
             <div id="midimenu" style="display:none; border:1px solid gray;magrin:2px;padding:2px;">
+                <label for="trajrec">Send to all</label>
+                <input type="checkbox" id="sedtoall" onclick="setsendtoall();">|
                 <label for="inputportselector">MIDI Input:</label>
                 <select id="inputportselector">
 		        </select>
                 <label for="outputportselector">MIDI Output:</label>
                 <select id="outputportselector" onchange="resetMIDIout( );">
 		        </select>
-                <label for="trajrec">Send to all</label>
-                <input type="checkbox" id="sedtoall" onclick="setsendtoall();">
             </div> 
 
             <div id="oscmenu" style="display:none; border:1px solid gray;magrin:2px;padding:2px;">
@@ -96,16 +96,13 @@
             
             <div id="buttonmenu" style="display:none; border:1px dashed gray;magrin:2px;padding:2px;">   
                 <label for="trajrec">Mixed Path</label>
-                <input type="checkbox" id="trajrec" onclick="menutraj();">
+                <input type="checkbox" id="trajrec" onclick="menutraj();">|
                 <label for="daynightsel">Background</label>
                 <select id="daynightsel" onchange="daynight( );">
                     <option value=0>NIGHT</option>
                     <option value=1>DAY</option>
 		        </select>
-                <label for="trajrec">Selftouch</label>
-                <button type="button" id="trajrec" onclick="doselftouch();">Do</button>
-                <label for="useklickel">Use Mouse</label>
-                <input type="checkbox" id="useklickel" onclick="menumouse();" checked>
+                
                 <label for="buttspace">Button spacing:</label>
                 <input type="text" width="3" id="buttspace" value="" onkeyup="buttdist();">
                 
@@ -113,23 +110,46 @@
 
             <div id="synthmenu" style="display:none; border:1px solid gray;magrin:2px;padding:2px;">
                 <label for="internalsynthsw">Use internal synth</label>
-                <input type="checkbox" id="internalsynthsw" onclick="setuseinternalsynth( );">
+                <input type="checkbox" id="internalsynthsw" onclick="setuseinternalsynth( );">|
+                <label for="wavesel">Waveform</label>
+                <select id="wavesel" onchange="changeWaveForm( );">
+                    <option value="sawtooth">sawtooth</option>
+                    <option value="sine">sine</option>
+                    <option value="square">square</option> 
+                    <option value="triangle">triangle</option>
+		        </select>
+
+                <label for="filsel">Filtertype</label>
+                <select id="filsel" onchange="changeFilType( );">
+                    <option value="lowpass">lowpass</option>
+                    <option value="highpass">highpass</option>
+                    <option value="bandpass">bandpass</option> 
+                    <option value="lowshelf">lowshelf</option>
+                    <option value="highshelf">highshelf</option>
+                    <option value="peaking">peaking</option>
+                    <option value="notch">notch</option> 
+                    <option value="allpass">allpass</option>
+		        </select>
+                <label for="filterQ">Q-Filter:</label>
+                <input type="text" width="10" id="filterQ" value="10.0" onkeyup="changeQ();">
+                <label for="filterF">Filter-Frq:</label>
+                <input type="text" width="10" id="filterF" value="10" onkeyup="changeF();">
             </div> 
 
             <div id="gestmenu" style="display:none; border:1px dotted gray;magrin:2px;padding:2px;">   
                 <label for="gestrec">Gestures</label>
-                <input type="checkbox" id="gestrec" onclick="setusegest();" checked>
+                <input type="checkbox" id="gestrec" onclick="setusegest();" checked>|
                 <label for="gestvel">Trajectoryvelocity 2 Velocity</label>
                 <input type="checkbox" id="gestvel" onclick="setusevel();" checked>
                 <label for="gestafter">Curvature 2 Aftertouch</label>
-                <input type="checkbox" id="gestafter" onclick="setuseafter();" checked>
-                <label for="gestmodu">Curvature 2 Modulation</label>
-                <input type="checkbox" id="gestmodu" onclick="setusemodul();" checked>
+                <input type="checkbox" id="gestafter" onclick="setuseafter();">
+                <label for="gestmodu">Curvature 2 Pitch Bend</label>
+                <input type="checkbox" id="gestmodu" onclick="setusemodul();">
             </div>
 
             <div id="seqmenu" style="display:none; border:1px dashed gray; magrin:2px;padding:2px;">
                 <label for="trajrecseq">Add to Seq.</label>
-                <input type="checkbox" id="trajrecseq" checked onclick="menusequtraj();">
+                <input type="checkbox" id="trajrecseq" checked onclick="menusequtraj();">|
                 
                 <button type="button" id="seqplay" onclick="play();">Play</button>
                 <button type="button" id="seqpause" onclick="pause();">Pause</button>  
