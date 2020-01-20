@@ -59,6 +59,7 @@ let sequcon = null;
 let w = null;
 let h = null;
 let backgrDAYNIGHT = 1; //1 day 0 night
+let currentsize = 0; // size of keyarea
 let strokeoftraj = "black";
 let seqtimingelem = null;
 
@@ -66,6 +67,8 @@ let seqtimingelem = null;
 let elemsize = 57; //values are reset by the init fkt
 let elemdist = 5;
 let elemcount = 19;
+let elemradius = 0;
+let elemfontsize = 0;
 
 /*MIDI globals*/
 //NEUER STRANDRAD: POLYPHONE EXPRESSION (MPE)
@@ -227,9 +230,9 @@ let useinternal = false;
 //https://upload.wikimedia.org/wikipedia/commons/a/a8/Geteilte_tastatur2.gif
 //Layout und Octaven:
 //https://www.c-thru-music.com/cgi/?page=layout_octaves
-//orientierung:
+//Orientierung:
 //https://en.wikipedia.org/wiki/Harmonic_table_note_layout#/media/File:HarmonicTableMusicNoteLayout.png
-//bei dierser Anordnung gibt es zusätzlich andere Intervalle die entstehen, neben Quinten, kleinen und großen Terzen auch Septimen
+//bei dieser Anordnung gibt es zusätzlich andere Intervalle die entstehen, neben Quinten, kleinen und großen Terzen auch Septimen
 //USING HELMHOLZ NOTATION -- ONSCREEN USING SCIENTIFIC NOTATION
 let quintenterzen = [
 //18
@@ -290,7 +293,80 @@ let quintenterzen = [
 //1
     ["F###"],
     ["D###"]
-]
+];
+
+let quintenterzenSMALL = [
+//13
+    ["dis’’’’", "gis’’’", "cis’’’", "fis’’", "h’", "e’", "a", "d", "G", "C", "F#", "Ais##", "Dis##"],
+    ["c’’’’", "f’’’", "ais’’", "dis’’", "gis’", "cis’", "fis", "H", "E", "A#", "D#", "G##"],
+//12
+    ["a’’’", "d’’’", "g’’", "c’’", "f’", "ais", "dis", "Gis", "Cis", "Fis#", "H##", "E##"],
+//11
+    ["fis’’’", "h’’", "e’’", "a’", "d’", "g", "c", "F", "Ais#","Dis#","Gis##"],
+    ["dis’’’", "gis’’", "cis’’", "fis’", "h", "e", "A", "D", "G#", "C#", "F##"],
+    ["c’’’", "f’’", "ais’", "dis’", "gis", "cis", "Fis", "H#", "E#", "A##", "D##"],
+//10
+    ["a’’", "d’’", "g’", "c’", "f", "Ais", "Dis", "Gis#", "Cis#", "Fis##"],
+    ["fis’’", "h’", "e’", "a", "d", "G", "C", "F#", "Ais##", "Dis##"],
+//9
+    ["dis’’", "gis’", "cis’", "fis", "H", "E", "A#", "D#", "G##"],
+    ["c’’", "f’", "ais", "dis", "Gis", "Cis", "Fis#", "H##", "E##"],
+//8
+    ["a’", "d’", "g", "c", "F", "Ais#", "Dis#", "Gis##"],
+    ["fis’", "h", "e", "A", "D", "G#", "C#", "F##"],
+    ["dis’", "gis", "cis", "Fis", "H#", "E#", "A##", "D##"],
+//7
+    ["c’", "f", "Ais", "Dis", "Gis#", "Cis#", "Fis##"],
+    ["a", "d", "G", "C", "Fis#", "Ais##", "Dis##"],
+//6
+    ["fis", "H", "E", "A#", "D#", "G##"],
+    ["dis", "Gis", "Cis", "Fis#", "H##", "E##"],
+//5
+    ["c", "F", "Ais#", "Dis#", "Gis##"],
+    ["A", "D", "G#", "C#", "F##"],
+    ["Fis", "H#", "E#", "A##", "D##"],
+//4
+    ["Dis", "Gis#", "Cis#", "Fis##"],
+    ["C", "F#", "Ais##", "Dis##"],
+//3
+    ["A#", "D#", "G##"],
+    ["Fis#", "H##", "E##"],
+//2
+    ["Dis#", "Gis##"],
+    ["C#", "F##"],
+    ["A##", "D##"],
+//1
+    ["Fis##"],
+    ["Dis##"]
+];
+
+let quintenterzenVERYSMALL = [
+//8
+    [ "cis’’’", "fis’’", "h’", "e’", "a", "d", "G", "C"],
+    ["ais’’", "dis’’", "gis’", "cis’", "fis", "H", "E"],
+//7
+    ["g’’", "c’’", "f’", "ais", "dis", "Gis", "Cis"],
+//6
+    ["e’’", "a’", "d’", "g", "c", "F"],
+    ["cis’’", "fis’", "h", "e", "A", "D"],
+    ["ais’", "dis’", "gis", "cis", "Fis", "H#"],
+//5
+    ["g’", "c’", "f", "Ais", "Dis"],
+    ["e’", "a", "d", "G", "C"],
+//4
+    ["cis’", "fis", "H", "E"],
+    ["ais", "dis", "Gis", "Cis"],
+//3
+    ["g", "c", "F"],
+    ["e", "A", "D"],
+    ["cis", "Fis", "H#"],
+//2
+    ["Ais", "Dis"],
+    ["G", "C"],
+//1
+    ["E"],
+    ["Cis"]
+];
 
 //MIDI NOTES AND EVENTS
 let midiNotes = {
@@ -859,6 +935,13 @@ function scalarProd( v1, v2 ){
     return sp;
 }
 
+Array.prototype.swapIT = function( pos1, pos2 ) {
+  var memit = this[ pos1 ];
+  this[ pos1 ] = this[ pos2 ];
+  this[ pos2 ] = memit;
+  return this;
+}
+
 /******************************************************************************* 
 
                     Storage
@@ -868,8 +951,10 @@ function scalarProd( v1, v2 ){
 function TOstorage( ){
     localStorage.setItem( "mixedtraj", mixedtraj );
     localStorage.setItem( "passtosequencer", passtosequencer );
-    localStorage.setItem( "doplay", doplay );
+    //localStorage.setItem( "doplay", doplay );
     localStorage.setItem( "backgrDAYNIGHT", backgrDAYNIGHT );
+    localStorage.setItem( "currentsize", currentsize );
+    
     localStorage.setItem( "strokeoftraj", strokeoftraj );
     localStorage.setItem( "sendtoall", sendtoall );
   
@@ -887,9 +972,10 @@ function TOstorage( ){
 function FROMstorage( ){
     mixedtraj = JSON.parse( localStorage.getItem( "mixedtraj" ) );
     passtosequencer = JSON.parse( localStorage.getItem( "passtosequencer" ) );
-    doplay = JSON.parse( localStorage.getItem( "doplay" ) );
+    //doplay = JSON.parse( localStorage.getItem( "doplay" ) );
 
     backgrDAYNIGHT = parseInt( localStorage.getItem( "backgrDAYNIGHT" ) );
+    currentsize = parseInt( localStorage.getItem( "currentsize" ) );
     strokeoftraj = localStorage.getItem( "strokeoftraj" );
     sendtoall = JSON.parse( localStorage.getItem( "sendtoall" ) );
   
@@ -958,6 +1044,14 @@ function daynight( ){
         strokeoftraj = "black";
     }
     TOstorage( );
+}
+
+function sizeselection( ){
+    let sisel = document.getElementById("sizesle");
+    currentsize = parseInt(sisel.options[ sisel.selectedIndex ].value);
+    
+    TOstorage( );
+    location.reload( );
 }
 
 function menusequtraj( ){
@@ -1054,30 +1148,73 @@ function changeOSCstr( ){
     TOstorage( );
 }
 
+function shiftsequelem( elem ){ 
+    if( elem ){
+        let cn = elem.getAttribute( "class" );
+        let index = Array.prototype.indexOf.call( seqtimingelem.children, elem.parentNode );
+        let lastpos = seqtimingelem.children.length-1;
+        let indexindex = index;
+        if( cn === "right" ){
+            indexindex = index+1;
+            if( indexindex > lastpos ){
+                indexindex = 0;
+            }
+        } else if( cn === "left" ){
+            indexindex = index-1;
+            if( indexindex < 0 ){
+                indexindex = lastpos;
+            }
+        }
+        //swap values of display
+        let sel = seqtimingelem.children[ index ].children[0].selectedIndex; //delay after parseInt( delayelem.options[ delayelem.selectedIndex ].value );
+        seqtimingelem.children[ index ].children[0].selectedIndex = seqtimingelem.children[ indexindex ].children[0].selectedIndex;
+        seqtimingelem.children[ indexindex ].children[0].selectedIndex = sel;
+        //mute
+        let mu = seqtimingelem.children[ index ].children[1].checked;
+        seqtimingelem.children[ index ].children[1].checked = seqtimingelem.children[ indexindex ].children[1].checked;
+        seqtimingelem.children[ indexindex ].children[1].checked = mu;
+        //color of border
+        let bor = seqtimingelem.children[ index ].style.border;
+        seqtimingelem.children[ index ].style.border = seqtimingelem.children[ indexindex ].style.border;
+        seqtimingelem.children[ indexindex ].style.border = bor;
+        //swap values of sequnecer
+        sequencer.swapIT(index, indexindex );
+    }
+}
+
 function addtoseqtiming( ){
     let sp = document.createElement( "span" );
     sp.className = "seqteprep";
+    sp.style.border = '2px solid #' + Math.random().toString(16).substring(2, 8);
 
     let i = document.createElement( "select" );//DELAY AFTER
     for( let u = 0; u < 30; u+=1 ){
         let o = document.createElement( "option" );
         o.value = u*50;
         o.innerHTML = u*50;
-        
         i.appendChild( o );
     }
     let j = document.createElement( "input" ); //MUTE step
     j.setAttribute( "type", "checkbox" );
     j.checked = true;
+    
 
-    let b = document.createElement( "br" );
-    let k = document.createElement( "span" ); //DELET FROM SEQ
-    //k.onclick = delfromseq( this );
-    k.innerHTML = "X";
+    let b = document.createElement( "button" );
+    //b.style.fontSize = elemsize.toString()+"px";
+    b.innerHTML = "⤶";
+    b.className = "left";
+    b.onclick = function(){shiftsequelem(this)};
+    let k = document.createElement( "button" ); 
+    k.type = "button";
+    
+    //k.style.fontSize = elemsize.toString()+"px";
+    k.innerHTML = "⤷";
+    k.className = "right";
+    k.onclick = function(){shiftsequelem(this)};
     sp.appendChild( i );
-    //sp.appendChild( b );
     sp.appendChild( j );
-    //sp.appendChild( k );
+    sp.appendChild( b );
+    sp.appendChild( k );
     seqtimingelem.appendChild( sp ); 
     HplaceMenu(  ); //hm  
 } 
@@ -1095,6 +1232,7 @@ function initMenu( ){
     document.getElementById('sedtoall').checked = sendtoall;
     document.getElementById('trajrec').checked = mixedtraj;
     document.getElementById("daynightsel").selectedIndex = parseInt(backgrDAYNIGHT);
+    document.getElementById("sizesle").selectedIndex = parseInt(currentsize);
     document.getElementById('trajrecseq').checked = passtosequencer;
     document.getElementById('sendosc').checked = jesnoOSC;
     document.getElementById('gestrec').checked = jesnogest;
@@ -1115,39 +1253,43 @@ function initMenu( ){
     m.addEventListener('touchend', function( e ) { e.stopImmediatePropagation(); });
 
     seqtimingelem = document.getElementById('seqtiming');
+    
 }
 
-function showmidimenu( ){
-    showsubmenudiv( "#midimenu" ); 
+function showmidimenu( elem ){
+    showsubmenudiv( "#midimenu" , elem ); 
 }
 
-function showbuttmenu( ){
-    showsubmenudiv( "#buttonmenu" );
+function showbuttmenu( elem ){
+    showsubmenudiv( "#buttonmenu", elem );
 }
 
-function showsynthmenu( ){
-    showsubmenudiv( "#synthmenu" );
+function showsynthmenu( elem ){
+    showsubmenudiv( "#synthmenu", elem );
 }
 
-function showseqmenu( ){
-    showsubmenudiv( "#seqmenu" );
+function showseqmenu( elem ){
+    showsubmenudiv( "#seqmenu", elem );
 }
 
-function showoscmenu( ){
-    showsubmenudiv( "#oscmenu" );
+function showoscmenu( elem ){
+    showsubmenudiv( "#oscmenu", elem );
 }
 
-function showgestmenu( ){
-    showsubmenudiv( "#gestmenu" );
+function showgestmenu( elem ){
+    showsubmenudiv( "#gestmenu", elem );
 }
 
-function showsubmenudiv( elemid ){
+function showsubmenudiv( elemid, oelem ){
     let melem = document.querySelector( elemid );
     if( melem.style.display === "none" ){
-        melem.style.background = '#' + Math.random().toString(16).substring(2, 8);
+        let c = '#' + Math.random().toString(16).substring(2, 8);
+        melem.style.background = c;
         melem.style.display = "block";
+        oelem.style.background = c;
     } else {
         melem.style.display = "none";
+        oelem.style.background = "buttonface";
     }
     HplaceMenu(  ); //hm 
 }
@@ -1195,7 +1337,8 @@ function upseq( ){
 }
 
 function play( ){
-    if(!doplay){
+    console.log(doplay)
+    if( !doplay ){
         doplay = true;
         TOstorage( );
         sequencerstep( );
@@ -1272,9 +1415,19 @@ function fromseqtomidi( seqframeI ){
     for( let elemid in sequencer[ seqframe ][ 0 ] ){
         if( sequencer[ seqframe ][ 0 ][ elemid ].length > 0 ){
         let durr =  sequencer[ seqframe ][ 0 ][ elemid ][ 0 ][ 1 ] - minstarttime;
+        let channeloffset = null;
+        if( MIDIchanOffAvailable.length !== 0 ){
+            channeloffset = MIDIchanOffAvailable.pop();
+        } else {
+            break;
+        }
+        //console.log("using chanoff", channeloffset, MIDIchanOffAvailable);
         for( let n = 0; n < sequencer[ seqframe ][ 0 ][ elemid ].length; n+=1 ){
+            
+            
+            //let channeloffset = sequencer[ seqframe ][ 0 ][ elemid ][ n ][ 2 ];
             let notedurr = sequencer[ seqframe ][ 0 ][ elemid ][ n ][ 4 ];
-            let channeloffset = sequencer[ seqframe ][ 0 ][ elemid ][ n ][ 2 ];
+            
             let VEL_VEL = FULL_VEL;
             if( jesnovel && jesnogest ){
                 VEL_VEL = sequencer[ seqframe ][ 0 ][ elemid ][ n ][ 5 ];
@@ -1332,7 +1485,11 @@ function fromseqtomidi( seqframeI ){
                             }
                         } 
                     }
-                } 
+                }
+                if( MIDIchanOffAvailable.indexOf( channeloffset ) === -1 ){
+                    MIDIchanOffAvailable.push( channeloffset );
+                    //console.log("free chan", channeloffset)
+                }
             }, durr );
         }
         }
@@ -1653,6 +1810,7 @@ function pointerdownEventFkt( e ) {
     if( MIDIchanOffAvailable.length !== 0 ){
         channeloffset = MIDIchanOffAvailable.pop();
     }
+    //console.log("------inuse chan", channeloffset)
     if( e.target.getAttribute("title") && channeloffset !== null ){
         let idofelem = e.target.getAttribute('id');
         clickedelem = e.target;
@@ -1759,6 +1917,7 @@ function pointerupEventFkt( e ) {
             }
             //reset and household
             MIDIchanOffAvailable.push( notesplaying[idofelem][0][2] );//push back/free the midichanneloffset 
+            //console.log("-----------chan back",  notesplaying[idofelem][0][2])
             notesplaying[ idofelem ] = [];
             touchesTargetOvertime[ idofelem ] = []; 
             //interaction//vis feedback
@@ -1783,76 +1942,6 @@ function pointerupEventFkt( e ) {
     }
 }
 
-//SIMULATE a touch
-/*function filthselftouch(x, y, element, eventType) {
-    try{
-      let touchObj = new Touch({
-        identifier: Date.now(),
-        target: element,
-        pageX: x,
-        pageY: y,
-        radiusX: 2.5,
-        radiusY: 2.5,
-        rotationAngle: 10,
-        force: 1.0,
-      });
-        
-      let touchEvent = new TouchEvent(eventType, {
-        cancelable: true,
-        bubbles: true,
-        touches: [touchObj],
-        targetTouches: [touchObj],
-        changedTouches: [touchObj],
-        shiftKey: false,
-      });
-      element.dispatchEvent(touchEvent);
-    }catch{}
-}
-
-function doselftouch(){
-    let x1 = 55;
-    let y1 = 66;
-    let elem1 = document.elementFromPoint(x1, y1);
-    let x2 = 255;
-    let y2 = 255;
-    let elem2 = document.elementFromPoint(x2, y2);
-    //console.log(elem2);
-    filthselftouch(x1, y1, elem1, 'touchstart');
-    filthselftouch(x2, y2, elem2, 'touchstart');
-    let i = 0;
-    for(i = 0; i < 100; i+=1 ){
-        
-        filthselftouch(x1, y1+i, elem1, 'touchmove');
-        filthselftouch(x2, y2+i, elem2, 'touchmove');
-        
-
-    }
-    filthselftouch(x1, y1+i, elem1, 'touchend');
-    filthselftouch(x2, y2+i, elem2, 'touchend');
-}
-*/
-
-//event listener klickan and mouse move - pass to touch handler
-//or convert
-/*
-window.addEventListener('mousedown', function( e ) { 
-    if( mouseit ){
-        clickedelem = e.target;
-        filthselftouch( e.pageX, e.pageY, clickedelem, 'touchstart');
-    }
-});
-window.addEventListener('mousemove', function( e ) { 
-    if( mouseit ){
-        filthselftouch( e.pageX, e.pageY, clickedelem, 'touchmove');
-    }
-});
-window.addEventListener('mouseup', function( e ) { 
-    if( mouseit ){
-        filthselftouch( e.pageX, e.pageY, clickedelem, 'touchend');
-        clickedelem = null;
-    }
-});
-*/
 /*******************************************************************************
   
               GUI Building
@@ -1984,7 +2073,7 @@ function getEinklang( cx, cy, r, titletext, cocol, colstro, textlab ){
             subt.setAttribute( 'baseline-shift', "sub" );
         }
         subt.setAttribute('fill', 'black');
-        subt.style.fontSize = (Math.round(r/2)).toString()+'px';
+        subt.style.fontSize = elemfontsize;//(Math.round(r/2)).toString()+'px';
         subt.textContent = (textlabspl.length-1).toString();
         textlab = textlabspl[ 0 ];
         add = -3;
@@ -2002,7 +2091,7 @@ function getEinklang( cx, cy, r, titletext, cocol, colstro, textlab ){
     text.setAttribute('y', cy+2);
     text.setAttribute('fill', 'black');
     text.setAttribute('font-family', 'monospace'); 
-    text.style.fontSize = (Math.round(r/2)).toString()+'px';
+    text.style.fontSize = elemfontsize;//(Math.round(r/2)).toString()+'px';
     text.textContent = textlab;
     text.appendChild(subt);
     let ri = Math.sqrt( (r*r)-((r/2)*(r/2)) );
@@ -2029,9 +2118,16 @@ function getEinklang( cx, cy, r, titletext, cocol, colstro, textlab ){
 }
 
 function buildUIbuttons( msvg ){ //vertival display better perf
+    //select size of the key area
+    if( currentsize === 1 ){
+        quintenterzen = quintenterzenSMALL;
+    } else if( currentsize === 2 ){
+        quintenterzen = quintenterzenVERYSMALL;
+    }
     let elemradius = Math.floor( elemsize / 2 );
+    
     //elemcount is eual to the first array length in quintenterzen
-
+    elemcount = quintenterzen[0].length;
     let incforW = Math.round( (w-elemradius) / (elemcount) );
     let incforH = Math.round( (h-elemsize)   / (quintenterzen.length) );
 
@@ -2215,6 +2311,9 @@ function screenInit( ){
     //
     elemcount = quintenterzen[0].length;
     elemsize = Math.abs(Math.round(Math.max(w,h) / (2*elemcount))-elemdist);
+
+    elemradius = Math.floor( elemsize / 2 );
+    elemfontsize = (Math.round(elemradius/2)).toString()+'px';
 }
 /*******************************************************************************
    
@@ -2385,6 +2484,7 @@ function initSynth( ){
 
         fil.frequency.value = 10;
 	    fil.Q.value = 10.0;
+        fil.gain.value = 1.0;
 		fil.type = 'lowpass';
         fil.connect( enve );
         
@@ -2435,10 +2535,6 @@ function netz( elemid ){
     initMenu( );
     daynight( );
 
-    //synth
-    /*if( useinternal ){
-        initSynth( );
-    }*/
     //performe happieness
     console.log("Ready for usage."); 
 }
