@@ -100,9 +100,22 @@ https://www.z-tennot-iu.de/quickview1.webm
 
 # Version
 v.0.1 (03.12.2019) tested on latest Linux desktop Chrome and 24" Full HD touchscreen
+v.0.2 (21.01.2020) pointing and touch device support, tested on VGA and HD screens
+
+Tested ON:
+
+
+Chrome Version 79.0.3945.79 64 Bit Linux -- *full support*
+
+Chromium Version 79.0.3945.79 64 Bit Linux -- *full support*
+
+Opera 65.0.3467.69 64 Bit Linux -- *full support*
+
+Firefox 72.0.1 64 Bit Linux -- no working MIDI Implementation
+
 
 # Future Days
-For the next Version an adaption to smaller touch screens is planned. Also I am looking forward to receive some nice sequences as example. If someone needs Open Sound Control, I can provide the whole software as browser plug-in with Open Sound Control. If someone face any errors please forward the issue right hear. The example PD synth will be upgraded with a convolution filter and different tunings. Any ideas, anyone?
+If someone needs Open Sound Control, I can provide the whole software as browser plug-in with Open Sound Control. If someone face any errors please forward the issue right hear. 
 
 # Installation
 
