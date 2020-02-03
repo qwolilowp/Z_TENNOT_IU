@@ -1877,10 +1877,12 @@ function pointerupEventFkt( e ) {
     
     let idofelem = e.target.getAttribute('id');
     if( e.pointerType !== "touch" ){
-        idofelem = clickedelem.getAttribute('id');
+        if(clickedelem){
+            idofelem = clickedelem.getAttribute('id');
+        }
     }
     
-    if( e.target.getAttribute("title") && notesplaying[idofelem] ){
+    if( notesplaying[idofelem] ){
         if( notesplaying[idofelem].length !== 0 ){
             let timestamp = e.timeStamp;
             //preparation for restart a seq frame
