@@ -213,9 +213,9 @@ let jesnoOSC = false;
 let OSCstring = "/zTennoT/";
 
 /*GESTURES*/
-let jesnogest = true;
+let jesnogest = false;
 let jesnovel = true;
-let jesnoafter = true;
+let jesnoafter = false;
 let jesnomodulation = false;
 
 /*SVG Globals*/
@@ -1004,6 +1004,31 @@ function initSettings( ){
                     Menu
 
 *******************************************************************************/
+function endFullScree( ){
+    if (document.exitFullscreen) {
+    document.exitFullscreen();
+  } else if (document.mozCancelFullScreen) { /* Firefox */
+    document.mozCancelFullScreen();
+  } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+    document.webkitExitFullscreen();
+  } else if (document.msExitFullscreen) { /* IE/Edge */
+    document.msExitFullscreen();
+  }
+}
+
+function entFullScree( ){
+  let elem = document.documentElement;
+  if( elem.requestFullscreen ){
+    elem.requestFullscreen( ).then();
+  } else if( elem.mozRequestFullScreen ){ /* Firefox */
+    elem.mozRequestFullScreen( ).then();
+  } else if( elem.webkitRequestFullscreen ){ /* Chrome, Safari and Opera */
+    elem.webkitRequestFullscreen( ).then(); //
+  } else if( elem.msRequestFullscreen ){ /* IE/Edge */
+    elem.msRequestFullscreen( ).then();
+  }
+    
+}
 
 function resetMIDIin( ){//not used now
     let inpsel = document.getElementById("inputportselector");
@@ -2370,9 +2395,9 @@ function midiInit( ){ //...
 let notinitsynth = true;
 let audiocontext = null;
 
-let attack = 0.05;			
+let attack = 0.0;			
 let release = 0.05;		
-let portamento = 0.05;	
+let portamento = 0.0;	
 
 
 let OSCIS = [];
@@ -2436,7 +2461,9 @@ function changeQ( ){
             newQ = 1000.0;
         }
         for( let f in FILTERS ){
-            FILTERS[f].Q.value = newQ;
+            if(FILTERS[f].Q){
+                FILTERS[f].Q.value = newQ;
+            }
         }
     }
 }
@@ -2452,7 +2479,9 @@ function changeF( ){
         }
         
         for( let f in FILTERS ){
-            FILTERS[f].frequency.value = newF;
+            if(FILTERS[f].frequency){
+                FILTERS[f].frequency.value = newF;
+            }
         }
     }
 }
@@ -2460,7 +2489,9 @@ function changeF( ){
 function changeFilType( ){
     let newtype = document.getElementById("filsel").options[ document.getElementById("filsel").selectedIndex ].value;
     for( let f in FILTERS ){
-        FILTERS[f].type = newtype;
+        if(FILTERS[f].type){
+            FILTERS[f].type = newtype;
+        }
     }
 }
 
@@ -2475,14 +2506,14 @@ function initSynth( ){
         let enve = audiocontext.createGain( );
         let fil = audiocontext.createBiquadFilter( );
 			
-        oscil.connect( enve );
+        oscil.connect( fil );
         oscil.type = 'sawtooth';
 	    oscil.start(0);
 
         enve.gain.value = 0.0;
         enve.connect( audiocontext.destination );
 
-        fil.frequency.value = 10;
+        fil.frequency.value = 1000;
 	    fil.Q.value = 10.0;
         fil.gain.value = 1.0;
 		fil.type = 'lowpass';
