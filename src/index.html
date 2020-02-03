@@ -2,16 +2,16 @@
 <html lang="de">
 	<head>
 		<meta charset="utf-8" />
-        <link rel="shortcut icon" href="favicon.ico" />
+        	<link rel="shortcut icon" href="favicon.ico" />
 		<link rel="apple-touch-icon" href="favicon.ico" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-        <meta name=”viewport” content=”width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;” />
-        <meta name=”viewport” content=”width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=false;” />
-        <meta name=”viewport” content=”width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no;” />
-        <meta name="viewport" content="width=device-width, user-scalable=no" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <meta name="HandheldFriendly" content="true">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+        	<meta name=”viewport” content=”width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;” />
+        	<meta name=”viewport” content=”width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=false;” />
+        	<meta name=”viewport” content=”width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no;” />
+        	<meta name="viewport" content="width=device-width, user-scalable=no" />
+        	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        	<meta name="HandheldFriendly" content="true">
+        	<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
 
 
 		<title>Z _ T E N N O T _ I U</title>
@@ -69,12 +69,13 @@
 	</head>
 	<body>
         <div id="menu" style="position:absolute; top:550px; z-index:10;">
-            <button type="button" onclick="showmidimenu();">MIDI</button>
+            <button type="button" onclick="showmidimenu( this );">MIDI</button>
             <!--button type="button" onclick="showoscmenu();">OCS</button-->
-            <button type="button" onclick="showbuttmenu();">UI</button>
-            <button type="button" onclick="showsynthmenu();">Synth</button>
-            <button type="button" onclick="showgestmenu();">Gesture</button>
-            <button type="button" onclick="showseqmenu();">Sequencer</button>
+            <button type="button" onclick="showbuttmenu( this);">UI</button>
+            <button type="button" onclick="showsynthmenu( this );">Synth</button>
+            <button type="button" onclick="showgestmenu( this );">Gesture</button>
+            <!--button type="button" onclick="endFullScree( );">⤧</button-->
+            <button type="button" onclick="location.reload( );">↻</button>
                         
             <div id="midimenu" style="display:none; border:1px solid gray;magrin:2px;padding:2px;">
                 <label for="trajrec">Send to all</label>
@@ -105,7 +106,12 @@
                 
                 <label for="buttspace">Button spacing:</label>
                 <input type="text" width="3" id="buttspace" value="" onkeyup="buttdist();">
-                
+                <label for="sizesle">Notelayout</label>
+                <select id="sizesle" onchange="sizeselection( );">
+                    <option value=0>large</option>
+                    <option value=1>small</option>
+                    <option value=2>very small</option>
+		        </select>
             </div>
 
             <div id="synthmenu" style="display:none; border:1px solid gray;magrin:2px;padding:2px;">
@@ -133,14 +139,14 @@
                 <label for="filterQ">Q-Filter:</label>
                 <input type="text" width="10" id="filterQ" value="10.0" onkeyup="changeQ();">
                 <label for="filterF">Filter-Frq:</label>
-                <input type="text" width="10" id="filterF" value="10" onkeyup="changeF();">
+                <input type="text" width="10" id="filterF" value="1000" onkeyup="changeF();">
             </div> 
 
             <div id="gestmenu" style="display:none; border:1px dotted gray;magrin:2px;padding:2px;">   
                 <label for="gestrec">Gestures</label>
-                <input type="checkbox" id="gestrec" onclick="setusegest();" checked>|
+                <input type="checkbox" id="gestrec" onclick="setusegest();">|
                 <label for="gestvel">Trajectoryvelocity 2 Velocity</label>
-                <input type="checkbox" id="gestvel" onclick="setusevel();" checked>
+                <input type="checkbox" id="gestvel" onclick="setusevel();">
                 <label for="gestafter">Curvature 2 Aftertouch</label>
                 <input type="checkbox" id="gestafter" onclick="setuseafter();">
                 <label for="gestmodu">Curvature 2 Pitch Bend</label>
@@ -151,11 +157,11 @@
                 <label for="trajrecseq">Add to Seq.</label>
                 <input type="checkbox" id="trajrecseq" checked onclick="menusequtraj();">|
                 
-                <button type="button" id="seqplay" onclick="play();">Play</button>
-                <button type="button" id="seqpause" onclick="pause();">Pause</button>  
-                <button type="button" id="seqclear" onclick="clearseq();">Clear</button>
-                <button type="button" id="mutdel" onclick="delmuted();">Del muted</button>
-                <button type="button" id="seqdown" onclick="downseq();">Download</button>
+                <button id="seqplay" onclick="play();">Play</button>
+                <button id="seqpause" onclick="pause();">Pause</button>  
+                <button id="seqclear" onclick="clearseq();">Clear</button>
+                <button id="mutdel" onclick="delmuted();">Del muted</button>
+                <button id="seqdown" onclick="downseq();">Download</button>
                 <input type="file" id="seqinput" name="Local file inp" value="Upload" onchange="upseq( );">    <br>
                 <label for="trajrecseq">Sequence:</label>
                 <span id="seqtiming">
@@ -169,6 +175,8 @@
 
         
         <script>
+            
+            
             netz( "hereitlives" );
             document.getElementById('basestring').value = OSCstring;
         </script>
