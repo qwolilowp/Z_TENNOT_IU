@@ -17,7 +17,7 @@ Use the note value labeled hexagon to play single tones. Use the belts between h
 ## Main Menu
 ![](allmen.png?raw=true)
 
-There are five menu buttons at the bottom of the interface. They show and hide the corresponding menus. 
+There are six menu buttons at the bottom of the interface. They show and hide the corresponding menus. The last Button is a reload button. 
 
 ## MIDI Menu
 ![](midi.png?raw=true)
@@ -27,9 +27,7 @@ The MIDI menu let you control the hardware / software midi output the program sh
 ## UI (user interface) Menu
 ![](ui.png?raw=true)
 
-This menu is related to the user interface. You can choose if a path or trajectory you form with your touches has only a single type of note play (for example just hexagon buttons) or could be a mixture of all possible button forms. You can choose between a white and a black background. And there is a touch simulation called "selftouch" for testing purpose.
-
-If you like to test the software with your mouse or touchpad, enable the "Use Mouse" checkbox. To shrink the hexagons increase the value of "Button Spacing".
+This menu is related to the user interface. You can choose if a path or trajectory you form with your touches has only a single type of note play (for example just hexagon buttons) or could be a mixture of all possible button forms. You can choose between a white and a black background (day/night selection). There is a select to increase the spcing between the hexagon buttons and a selction how big the botton areashould get. Note, if you change the size of the buttonarea the page gets reloaded. 
 
 ## Gesture Menu
 ![](gest.png?raw=true)
@@ -57,7 +55,7 @@ To test the button matrix one can use a simple muilt oszillator WebAudio synth. 
 
 
 ### Sound
-Use the pulldown label "Waveform" to change the charcteristic of all oscillators. Use the pulldown labeled "Filtertype" to change the filter chraacteristic of all active filters. Input Q Factor (0.0001 - 1000.0) of all filters and input the cutoff / center frequency of the filter.
+Use the pulldown label "Waveform" to change the charcteristic of all oscillators. Use the pulldown labeled "Filtertype" to change the filter characteristic of all active filters. Select a Q Factor (0.0001 - 1000.0) of all filters and a the cutoff / center frequency of the filter. You also can select between two tunings.
  
 ### Gesture mapping (experimental)
 The mapping of the gesture values is as follwos:
