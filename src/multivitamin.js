@@ -17,11 +17,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-MIDI / LINUX NOTE:
--VMPK: out of the box (ALSA MIDI)
--VCV: out of the box (ALSA MIDI)
--PD: aconnect 'Midi Through' 'Pure Data' (connection via commandline)
-
 */
 
 "use strict";
@@ -62,6 +57,7 @@ let backgrDAYNIGHT = 1; //1 day 0 night
 let currentsize = 0; // size of keyarea
 let strokeoftraj = "black";
 let seqtimingelem = null;
+let countbuttons = 0;
 
 //Buttons 
 let elemsize = 57; //values are reset by the init fkt
@@ -766,8 +762,137 @@ let midiNotesCOLOR = {
 //MIDI NUM FREQ MAPPING -Stimmung
 //welche: https://bluemich.net/drehorgel/stimmung-temperaturen.pdf
 let currtunning = 0;
-let clean = {
-
+let basetone = 440.0;
+let clean = { //initialized with equnal tuning values changed by function
+    128:13289.75,
+    127:12543.85,
+    126:11839.82,
+    125:11175.30,
+    124:10548.08,
+    123:9956.06,
+    122:9397.27,
+    121:8869.84,
+    120:8372.02,
+    119:7902.13,
+    118:7458.62,
+    117:7040.00,
+    116:6644.88,
+    115:6271.93,
+    114:5919.91,
+    113:5587.65,
+    112:5274.04,
+    111:4978.03,
+    110:4698.64,
+    109:4434.92,
+    108:4186.01,
+    107:3951.07,
+    106:3729.31,
+    105:3520.00,
+    104:3322.44,
+    103:3135.96,
+    102:2959.96,
+    101:2793.83,
+    100:2637.02,
+    99:2489.02,
+    98:2349.32,
+    97:2217.46,
+    96:2093.00,
+    95:1975.53,
+    94:1864.66,
+    93:1760.00,
+    92:1661.22,
+    91:1567.98,
+    90:1479.98,
+    89:1396.91,
+    88:1318.51,
+    87:1244.51,
+    86:1174.66,
+    85:1108.73,
+    84:1046.50,
+    83:987.77,
+    82:932.33,
+    81:880.00,
+    80:830.61,
+    79:783.99,
+    78:739.99,
+    77:698.46,
+    76:659.26,
+    75:622.25,
+    74:587.33,
+    73:554.37,
+    72:523.25,
+    71:493.88,
+    70:466.16,
+    69:440.00,
+    68:415.30,
+    67:392.00,
+    66:369.99,
+    65:349.23,
+    64:329.63,
+    63:311.13,
+    62:293.66,
+    61:277.18,
+    60:261.63,
+    59:246.94,
+    58:233.08,
+    57:220.00,
+    56:207.65,
+    55:196.00,
+    54:185.00,
+    53:174.61,
+    52:164.81,
+    51:155.56,
+    50:146.83,
+    49:138.59,
+    48:130.81,
+    47:123.47,
+    46:116.54,
+    45:110.00,
+    44:103.83,
+    43:98.00,
+    42:92.50,
+    41:87.31,
+    40:82.41,
+    39:77.78,
+    38:73.42,
+    37:69.30,
+    36:65.41,
+    35:61.74,
+    34:58.27,
+    33:55.00,
+    32:51.91,
+    31:49.00,
+    30:46.25,
+    29:43.65,
+    28:41.20,
+    27:38.89,
+    26:36.71,
+    25:34.65,
+    24:32.70,
+    23:30.87,
+    22:29.14,
+    21:27.50,
+    20:25.96,
+    19:24.50,
+    18:23.12,
+    17:21.83,
+    16:20.60,
+    15:19.45,
+    14:18.35,
+    13:17.32,
+    12:16.35,
+    11:15.43,
+    10:14.57,
+    9:13.75,
+    8:12.98,
+    7:12.25,
+    6:11.56,
+    5:10.91,
+    4:10.30,
+    3:9.72,
+    2:9.18,
+    1:8.66,
+    0:8.18
 };
 
 let equal = {
@@ -1088,23 +1213,16 @@ function menusequtraj( ){
     TOstorage( );
 }
 
-function menumouse( ){
-    if( document.getElementById('useklickel').checked ){
-        mouseit = true;
-    } else {
-        mouseit = false;
-    }
-    TOstorage( );
-}
 
 function buttdist( ){
-    if( document.getElementById('buttspace').value !== "" ){
-        let elemdisttemp = parseInt( document.getElementById('buttspace').value );
-        if(elemdisttemp > 0 && elemdisttemp < 100 ){
-            elemdist = elemdisttemp;
-        }
+    let thesel = document.getElementById("buttspace");
+    let elemdisttemp = parseInt(thesel.options[ thesel.selectedIndex ].value);
+    if(elemdisttemp > 0 && elemdisttemp < 100 ){
+        elemdist = elemdisttemp;
     }
+    
     TOstorage( );
+    location.reload( );
 }
 
 
@@ -1252,35 +1370,6 @@ function HplaceMenu( val ){
     m.style.top = (h-val).toString()+"px";
 }
 
-function initMenu( ){    
-    //write presets to the menu GUI
-    document.getElementById('sedtoall').checked = sendtoall;
-    document.getElementById('trajrec').checked = mixedtraj;
-    document.getElementById("daynightsel").selectedIndex = parseInt(backgrDAYNIGHT);
-    document.getElementById("sizesle").selectedIndex = parseInt(currentsize);
-    document.getElementById('trajrecseq').checked = passtosequencer;
-    document.getElementById('sendosc').checked = jesnoOSC;
-    document.getElementById('gestrec').checked = jesnogest;
-    document.getElementById('gestvel').checked = jesnovel;
-    document.getElementById('gestafter').checked = jesnoafter;
-    document.getElementById('basestring').value = OSCstring;
-    document.getElementById('gestmodu').checked = jesnomodulation;
-    //document.getElementById('internalsynthsw').checked = useinternal;
-    //document.getElementById('useklickel').checked = mouseit;
-    document.getElementById("buttspace").value = parseInt(elemdist);
-    //position of menu
-    let m = document.getElementById('menu');
-    m.style.width = (w-120).toString()+"px";
-    m.style.top = (h-m.offsetHeight).toString()+"px";
-    m.style.left = Math.round(w/10).toString()+"px";
-
-    m.addEventListener('touchstart', function( e ) {  e.stopImmediatePropagation(); });
-    m.addEventListener('touchend', function( e ) { e.stopImmediatePropagation(); });
-
-    seqtimingelem = document.getElementById('seqtiming');
-    
-}
-
 function showmidimenu( elem ){
     showsubmenudiv( "#midimenu" , elem ); 
 }
@@ -1417,6 +1506,51 @@ function delmuted( ){
         }
     }
     HplaceMenu( );
+}
+
+function initMenu( ){    
+    //write presets to the menu GUI
+    document.getElementById('sedtoall').checked = sendtoall;
+    document.getElementById('trajrec').checked = mixedtraj;
+    document.getElementById("daynightsel").selectedIndex = parseInt(backgrDAYNIGHT);
+    document.getElementById("sizesle").selectedIndex = parseInt(currentsize);
+    document.getElementById('trajrecseq').checked = passtosequencer;
+    document.getElementById('sendosc').checked = jesnoOSC;
+    document.getElementById('gestrec').checked = jesnogest;
+    document.getElementById('gestvel').checked = jesnovel;
+    document.getElementById('gestafter').checked = jesnoafter;
+    document.getElementById('basestring').value = OSCstring;
+    document.getElementById('gestmodu').checked = jesnomodulation;
+    //document.getElementById('internalsynthsw').checked = useinternal;
+    //document.getElementById('useklickel').checked = mouseit;
+    document.getElementById("buttspace").selectedIndex = parseInt(elemdist);
+    //position of menu
+    let m = document.getElementById('menu');
+    m.style.width = (w-120).toString()+"px";
+    m.style.top = (h-m.offsetHeight).toString()+"px";
+    m.style.left = Math.round(w/10).toString()+"px";
+
+    m.addEventListener('touchstart', function( e ) {  e.stopImmediatePropagation(); });
+    m.addEventListener('touchend', function( e ) { e.stopImmediatePropagation(); });
+
+    seqtimingelem = document.getElementById('seqtiming');
+    
+    //add filter q value selctions
+    let i = document.getElementById( "filterQ" );
+    for( let u = 1; u < 150; u+=5 ){
+        let o = document.createElement( "option" );
+        o.value = parseFloat( u );
+        o.innerHTML = parseFloat( u );
+        i.appendChild( o );
+    }
+    //add filter freq options to selct
+    i = document.getElementById( "filterF" );
+    for( let u = 1; u < 10000; u+=100 ){
+        let o = document.createElement( "option" );
+        o.value = u;
+        o.innerHTML = u;
+        i.appendChild( o );
+    }
 }
 
 /******************************************************************************* 
@@ -2000,7 +2134,7 @@ function getDreiklang( cx, cy, r, incw, inch, n0, nq, nt1, nt2, cocol, colstro )
         po += (cx+incw).toString()+","+(cy).toString()+" "; 
         let popo = document.createElementNS( xmlns, 'polygon' );
             popo.setAttribute( 'title', n0.toString()+","+nq.toString()+","+nt1.toString() );
-            popo.setAttribute( 'id', n0+"d0" );
+            popo.setAttribute( 'id', countbuttons.toString()+n0+"d0" );
             popo.setAttribute( 'fill' , cocol     );
             popo.setAttribute( 'stroke' , colstro     );
             popo.setAttribute( 'name' , cocol     );
@@ -2014,7 +2148,7 @@ function getDreiklang( cx, cy, r, incw, inch, n0, nq, nt1, nt2, cocol, colstro )
         poo += (cx+incw).toString()+","+(cy).toString()+" "; 
         let popopo = document.createElementNS( xmlns, 'polygon' );
             popopo.setAttribute( 'title', n0.toString()+","+nq.toString()+","+nt2.toString() );
-            popopo.setAttribute( 'id', n0+"d#" );
+            popopo.setAttribute( 'id', countbuttons.toString()+n0+"d#" );
             popopo.setAttribute( 'fill' , cocol     );
             popopo.setAttribute( 'stroke' , colstro     );
             popopo.setAttribute( 'name' , cocol     );
@@ -2039,7 +2173,7 @@ function getZweiklang( cx, cy, r, incw, inch, n0, nq, nt1, nt2, cocol, colstro )
         poo += cx.toString()+","+(cy+(ri/3)).toString()+" "; 
         let rere1 = document.createElementNS( xmlns, 'polygon' );
             rere1.setAttribute( 'title', n0.toString()+","+nq.toString() );
-            rere1.setAttribute( 'id', n0+"z0" );
+            rere1.setAttribute( 'id', countbuttons.toString()+n0+"z0" );
             rere1.setAttribute( 'fill' , cocol     );
             rere1.setAttribute( 'stroke' , colstro     );
             rere1.setAttribute( 'name' , cocol     );
@@ -2055,7 +2189,7 @@ function getZweiklang( cx, cy, r, incw, inch, n0, nq, nt1, nt2, cocol, colstro )
         pooo += (cx-(r/3)).toString()+","+(cy).toString()+" ";
         let rere2 = document.createElementNS( xmlns, 'polygon' );
             rere2.setAttribute( 'title', n0.toString()+","+nt2.toString() );
-            rere2.setAttribute( 'id', n0+"z1" );
+            rere2.setAttribute( 'id', countbuttons.toString()+n0+"z1" );
             rere2.setAttribute( 'fill' , cocol     );
             rere2.setAttribute( 'stroke' , colstro     );
             rere2.setAttribute( 'name' , cocol     );
@@ -2070,7 +2204,7 @@ function getZweiklang( cx, cy, r, incw, inch, n0, nq, nt1, nt2, cocol, colstro )
         poooo += (cx+(r/3)).toString()+","+(cy).toString()+" ";
         let rere3 = document.createElementNS( xmlns, 'polygon' );
             rere3.setAttribute( 'title', n0.toString()+","+nt1.toString() );
-            rere3.setAttribute( 'id', n0+"z2" );
+            rere3.setAttribute( 'id', countbuttons.toString()+n0+"z2" );
             rere3.setAttribute( 'fill' , cocol     );
             rere3.setAttribute( 'stroke' , colstro     );
             rere3.setAttribute( 'name' , cocol     );
@@ -2132,7 +2266,7 @@ function getEinklang( cx, cy, r, titletext, cocol, colstro, textlab ){
     
     let popo = document.createElementNS( xmlns, 'polygon' );
         popo.setAttribute( 'title', titletext );
-        popo.setAttribute( 'id', titletext+"e0" );
+        popo.setAttribute( 'id', countbuttons.toString()+titletext+"e0" );
         popo.setAttribute( 'fill' , cocol     );
         popo.setAttribute( 'stroke' , colstro     );
         popo.setAttribute( 'name' , cocol     );
@@ -2140,7 +2274,7 @@ function getEinklang( cx, cy, r, titletext, cocol, colstro, textlab ){
     
     cont.appendChild( popo );
     cont.appendChild( text );   
-
+    countbuttons += 1;
     return cont;
 }
 
@@ -2341,6 +2475,8 @@ function screenInit( ){
 
     elemradius = Math.floor( elemsize / 2 );
     elemfontsize = (Math.round(elemradius/2)).toString()+'px';
+
+    //add options for pull down menus
 }
 /*******************************************************************************
    
@@ -2425,10 +2561,10 @@ function routeTOsynth( msg ){
 			ENVES[channel].gain.setTargetAtTime( 0.0, 0, release );
             notesinsynth[ channel ] = 0;
         } else {
-            //console.log("note on", equal[note], )
+            //console.log("note on", tunings[currtunning][note], )
             OSCIS[channel].frequency.cancelScheduledValues( 0 );
-            notesinsynth[channel] = equal[note];
-			OSCIS[channel].frequency.setTargetAtTime( equal[note], 0, portamento );
+            notesinsynth[channel] = tunings[currtunning][note];
+			OSCIS[channel].frequency.setTargetAtTime( tunings[currtunning][note], 0, portamento );
             ENVES[channel].gain.cancelScheduledValues( 0 );
 			ENVES[channel].gain.setTargetAtTime( velocity, 0, attack );
         }
@@ -2454,7 +2590,7 @@ function changeWaveForm( ){
 }
 
 function changeQ( ){
-    let newQ = parseFloat( document.getElementById("filterQ").value );
+    let newQ = parseFloat( document.getElementById("filterQ").options[ document.getElementById("filterQ").selectedIndex ].value );
     if( newQ !== NaN ){
         if( newQ < 0.0001){
             newQ = 0.0001;
@@ -2471,7 +2607,7 @@ function changeQ( ){
 }
 
 function changeF( ){
-    let newF = parseInt( document.getElementById("filterF").value );
+    let newF = parseInt( document.getElementById("filterF").options[ document.getElementById("filterF").selectedIndex ].value );
     if( newF !== NaN ){
         if( newF < 0){
             newF = 0;
@@ -2488,6 +2624,10 @@ function changeF( ){
     }
 }
 
+function changetuning( ){
+    currtunning = parseInt( document.getElementById("tuningsel").options[ document.getElementById("tuningsel").selectedIndex ].value );
+}
+
 function changeFilType( ){
     let newtype = document.getElementById("filsel").options[ document.getElementById("filsel").selectedIndex ].value;
     for( let f in FILTERS ){
@@ -2498,6 +2638,7 @@ function changeFilType( ){
 }
 
 function initSynth( ){
+    computertuning();
     window.AudioContext = window.AudioContext || window.webkitAudioContext;
     audiocontext = new AudioContext( );
     //audiooutput = audiocontext.createMediaStreamDestination( );
@@ -2533,6 +2674,178 @@ function initSynth( ){
     console.log("internal Synth usable");
 }
 
+function computertuning( ){
+    //clean scaling factors
+    let sc11 = 15.0/8.0;
+    let sc10 = 9.0/5.0;
+    let sc9 = 5.0/3.0;
+    let sc8 = 8.0/5.0;
+    let sc7 = 3.0/2.0;
+    let sc6 = 7.0/5.0;
+    let sc5 = 4.0/3.0;
+    let sc4 = 5.0/4.0;
+    let sc3 = 6.0/5.0;
+    let sc2= 9.0/8.0;
+    let sc1 = 17.0/16.0;
+
+    //scaling basetone: 440.0
+
+    //bases per octav
+    clean[69] = basetone;
+
+    //upper octaves
+    clean[81] = clean[69]*2.0;
+    clean[93] = clean[81]*2.0;
+    clean[105] = clean[93]*2.0;
+    clean[117] = clean[105]*2.0;
+    //lower octaves
+    clean[57] = clean[69]/2.0;    
+    clean[45] = clean[57]/2.0;
+    clean[33] = clean[45]/2.0;
+    clean[21] = clean[33]/2.0;
+    clean[9] = clean[21]/2.0;
+    let ggg = clean[9]/2.0;
+
+    clean[128] = clean[117]*sc11;
+    clean[127] = clean[117]*sc10;
+    clean[126] = clean[117]*sc9;
+    clean[125] = clean[117]*sc8;
+    clean[124] = clean[117]*sc7;
+    clean[123] = clean[117]*sc6;
+    clean[122] = clean[117]*sc5;
+    clean[121] = clean[117]*sc4;
+    clean[120] = clean[117]*sc3;
+    clean[119] = clean[117]*sc2;
+    clean[118] = clean[117]*sc1;
+    
+    
+    clean[116] = clean[105]*sc11;
+    clean[115] = clean[105]*sc10;
+    clean[114] = clean[105]*sc9;
+    clean[113] = clean[105]*sc8;
+    clean[112] = clean[105]*sc7;
+    clean[111] = clean[105]*sc6;
+    clean[110] = clean[105]*sc5;
+    clean[109] = clean[105]*sc4;
+    clean[108] = clean[105]*sc3;
+    clean[107] = clean[105]*sc2;
+    clean[106] = clean[105]*sc1;
+    
+    
+    clean[104] = clean[93]*sc11;
+    clean[103] = clean[93]*sc10;
+    clean[102] = clean[93]*sc9;
+    clean[101] = clean[93]*sc8;
+    clean[100] = clean[93]*sc7;
+    clean[99] = clean[93]*sc6;
+    clean[98] = clean[93]*sc5;
+    clean[97] = clean[93]*sc4;
+    clean[96] = clean[93]*sc3;
+    clean[95] = clean[93]*sc2;
+    clean[94] = clean[93]*sc1;
+    
+    
+    clean[92] = clean[81]*sc11;
+    clean[91] = clean[81]*sc10;
+    clean[90] = clean[81]*sc9;
+    clean[89] = clean[81]*sc8;
+    clean[88] = clean[81]*sc7;
+    clean[87] = clean[81]*sc6;
+    clean[86] = clean[81]*sc5;
+    clean[85] = clean[81]*sc4;
+    clean[84] = clean[81]*sc3;
+    clean[83] = clean[81]*sc2;
+    clean[82] = clean[81]*sc1;
+    
+
+    clean[80] = clean[69]*sc11;
+    clean[79] = clean[69]*sc10;
+    clean[78] = clean[69]*sc9;
+    clean[77] = clean[69]*sc8;
+    clean[76] = clean[69]*sc7;
+    clean[75] = clean[69]*sc6;
+    clean[74] = clean[69]*sc5;
+    clean[73] = clean[69]*sc4;
+    clean[72] = clean[69]*sc3;
+    clean[71] = clean[69]*sc2;
+    clean[70] = clean[69]*sc1;
+    
+
+    
+    clean[68] = clean[57]*sc11;// 15/8
+    clean[67] = clean[57]*sc10;// 9/5
+    clean[66] = clean[57]*sc9;// 5/3
+    clean[65] = clean[57]*sc8;// 8/5
+    clean[64] = clean[57]*sc7;// 3/2
+    clean[63] = clean[57]*sc6;// 7/5
+    clean[62] = clean[57]*sc5;// 4/3
+    clean[61] = clean[57]*sc4;// 5/4
+    clean[60] = clean[57]*sc3;// 6/5
+    clean[59] = clean[57]*sc2;// 9/8
+    clean[58] = clean[57]*sc1;// 17/16
+    
+
+    clean[56] = clean[45]*sc11;
+    clean[55] = clean[45]*sc10;
+    clean[54] = clean[45]*sc9;
+    clean[53] = clean[45]*sc8;
+    clean[52] = clean[45]*sc7;
+    clean[51] = clean[45]*sc6;
+    clean[50] = clean[45]*sc5;
+    clean[49] = clean[45]*sc4;
+    clean[48] = clean[45]*sc3;
+    clean[47] = clean[45]*sc2;
+    clean[46] = clean[45]*sc1;
+
+    clean[44] = clean[33]*sc11;
+    clean[43] = clean[33]*sc10;
+    clean[42] = clean[33]*sc9;
+    clean[41] = clean[33]*sc8;
+    clean[40] = clean[33]*sc7;
+    clean[39] = clean[33]*sc6;
+    clean[38] = clean[33]*sc5;
+    clean[37] = clean[33]*sc4;
+    clean[36] = clean[33]*sc3;
+    clean[35] = clean[33]*sc2;
+    clean[34] = clean[33]*sc1;
+
+    clean[32] = clean[21]*sc11;
+    clean[31] = clean[21]*sc10;
+    clean[30] = clean[21]*sc9;
+    clean[29] = clean[21]*sc8;
+    clean[28] = clean[21]*sc7;
+    clean[27] = clean[21]*sc6;
+    clean[26] = clean[21]*sc5;
+    clean[25] = clean[21]*sc4;
+    clean[24] = clean[21]*sc3;
+    clean[23] = clean[21]*sc2;
+    clean[22] = clean[21]*sc1;
+
+    clean[20] = clean[9]*sc11;
+    clean[19] = clean[9]*sc10;
+    clean[18] = clean[9]*sc9;
+    clean[17] = clean[9]*sc8;
+    clean[16] = clean[9]*sc7;
+    clean[15] = clean[9]*sc6;
+    clean[14] = clean[9]*sc5;
+    clean[13] = clean[9]*sc4;
+    clean[12] = clean[9]*sc3;
+    clean[11] = clean[9]*sc2;
+    clean[10] = clean[9]*sc1;
+    
+
+    clean[8] = ggg*sc11;
+    clean[7] = ggg*sc10;
+    clean[6] = ggg*sc9;
+    clean[5] = ggg*sc8;
+    clean[4] = ggg*sc7;
+    clean[3] = ggg*sc6;
+    clean[2] = ggg*sc5;
+    clean[1] = ggg*sc4;
+    clean[0] = ggg*sc3;
+    //console.log(tunings);
+}
+
 /*******************************************************************************
 
                         MAIN MAIN
@@ -2544,7 +2857,7 @@ function netz( elemid ){
     
     initSettings( );
     midiInit( );
-    screenInit( ); //set globals about the screen
+    screenInit( ); //set globals about the screen and menu
 
     let thehtmltolinein = document.getElementById( elemid );
     thehtmltolinein.style.position = "fixed";//**
