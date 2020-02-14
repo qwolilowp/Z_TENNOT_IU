@@ -91,6 +91,9 @@ to connect the virtual MIDI cable, depending on you setup.
 ## on Windows
 On Windows you might use a additional software to create virtual MIDI ports. We have tested virtualMIDI (get it from https://www.tobias-erichsen.de/software/virtualmidi.html)
 
+## on OSX 
+You can use the
+
 # Notes
 * Use Chrome, there are Issues with other browsers.
 * Use the fullscreen mode of the browser to expand the button area.
@@ -113,7 +116,10 @@ https://www.z-tennot-iu.de/quickview1.webm
 
 # Version
 v.0.1 (03.12.2019) tested on latest Linux desktop Chrome and 24" Full HD touchscreen
+
 v.0.2 (21.01.2020) pointing and touch device support, tested on VGA and HD screens
+
+v.0.3 (12.02.2020) better webaudio, better interface, multitouch error deletion
 
 Tested ON:
 
@@ -124,8 +130,7 @@ Chromium Version 79.0.3945.79 64 Bit Linux -- *full support*
 
 Opera 65.0.3467.69 64 Bit Linux -- *full support*
 
-Firefox 72.0.1 64 Bit Linux -- no working MIDI Implementation
-
+Firefox, Safari, Edge and IE are not supported.
 
 # Future Days
 If someone needs Open Sound Control, I can provide the whole software as browser plug-in with Open Sound Control. If someone face any errors please forward the issue right hear. 
