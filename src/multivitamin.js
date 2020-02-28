@@ -2870,11 +2870,13 @@ function netz( elemid ){
     //1 trajectories
     trajectoryelem = getTrajElem( );
     trajcon = trajectoryelem.getContext('2d');
+    trajcon.lineCap = "round";
     thehtmltolinein.appendChild( trajectoryelem );
 
     //2 trajectories drawn for sequencer
     seqdrawelem = getSequTrajElem( );
     sequcon = seqdrawelem.getContext('2d');
+    sequcon.lineCap = "round";
     thehtmltolinein.appendChild( seqdrawelem );
 
     //menu init
