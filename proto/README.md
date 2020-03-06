@@ -2,7 +2,7 @@
 I experimented with muisc interaction. I worked on a coding composition environment and a 
 gesture based performance tool. Two examples:
 
-![](graphcomposition_dsPDT.tiff?raw=true)
+![](graphcomposition_dsPDT.jpg?raw=true)
 
 ![](screenvirtu40h.jpg?raw=true)
 
