@@ -20,7 +20,7 @@ The build is a light wooden enclosure housing a 24" touchscreen and a minicomput
 - a sheet of plywood
 - USB- and MINIHDMI-cable
 - xxGB microSDHC card
-- wool glue and screws
+- glue and screws
 
 ### Process
 T
