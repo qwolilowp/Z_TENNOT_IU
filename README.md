@@ -1,6 +1,6 @@
 # Z_TENNOT_IU
 
-The first version of the interface is inspired by harmonic table note layout, Tonnetz, Browser GUI, WebMIDI interface and sequencing. You can use up to five fingers to play notes on the interval grid. Theoretically you can use as much fingers as your touch-hardware supports, but the internal polyphonic mapping is limited to five fingers. Additional there is a sequencer that let you loop your input and modifies it in terms of time.
+The first version of the interface is inspired by harmonic table note layout, Euler-Tonnetz, Browser GUI, WebMIDI interface and sequencing. You can use up to five fingers to play notes on the interval grid. Theoretically you can use as much fingers as your touch-hardware supports, but the internal polyphonic mapping is limited to five fingers. Additional there is a sequencer that let you loop your input and modifies it in terms of time.
 
 Visit
 
@@ -11,7 +11,7 @@ https://www.z-tennot-iu.de
 ## Button Matrix
 ![](buttonarea.png?raw=true)
 
-Use the note value labeled hexagon to play single tones. Use the belts between hexagons to play the two connected notes (harmonic interval of two tones). And finally you can use the encircled area to play the three notes in the corners of the area (a harmonic interval of three tones). Trajectories (melodic intervals) formed through the travel of you fingertips could consist of only the type of shape you started at, or of all kinds of shapes. MIDI note-on and note-off mapping is close to MIDI Polyphonic Expression. You can play up to three channels with one touch. If you play one tone with one finger on channel is used, if you play two tones with one finger two channels are used and finally if you play three notes with one finger three channels are used. This MIDI mapping allows up to five finger polyphonic performance.
+Use the note value labeled squares to play single tones. Use the belts between squares to play the two connected notes (interval of two tones, thirds downwards, fith horizontal path, and other intervals digonal path). And finally you can use the encircled area to play the three notes in the corners of the area (a harmonic interval of three tones). Trajectories (melodic intervals) formed through the travel of you fingertips could consist of only the type of shape you started at, or of all kinds of shapes. MIDI note-on and note-off mapping is close to MIDI Polyphonic Expression. You can play up to three channels with one touch. If you play one tone with one finger on channel is used, if you play two tones with one finger two channels are used and finally if you play three notes with one finger three channels are used. This MIDI mapping allows up to five finger polyphonic performance.
 
 
 ## Main Menu
