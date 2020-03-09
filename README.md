@@ -108,6 +108,7 @@ You can use the
 ![](v21.png?raw=true)
 ![](v22.png?raw=true)
 ![](v23.png?raw=true)
+![](v24.png?raw=true)
 One quick screencast of the running sequencer:
 
 https://www.z-tennot-iu.de/quickview1.webm
