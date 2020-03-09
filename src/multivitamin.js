@@ -17,6 +17,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+MIDI / LINUX NOTE:
+-VMPK: out of the box (ALSA MIDI)
+-VCV: out of the box (ALSA MIDI)
+-PD: aconnect 'Midi Through' 'Pure Data' (connection via commandline)
+
 */
 
 "use strict";
@@ -230,6 +235,100 @@ let useinternal = false;
 //https://en.wikipedia.org/wiki/Harmonic_table_note_layout#/media/File:HarmonicTableMusicNoteLayout.png
 //bei dieser Anordnung gibt es zusätzlich andere Intervalle die entstehen, neben Quinten, kleinen und großen Terzen auch Septimen
 //USING HELMHOLZ NOTATION -- ONSCREEN USING SCIENTIFIC NOTATION
+
+// kl. Terz -- 3 Halbtonschritte 
+// gr. Terz -- 4 Halbtonschritte
+// Quinte -- 7 Halbtonschritte
+// 1  2    3  4    5  6  7    8  9    10 11   12
+// C  Cis  D  Dis  E  F  Fis  G  Gis  A  Ais  H 
+
+let quintenterzen = [
+    ["h’’’’’", "e’’’’’", "a’’’’", "d’’’’", "g’’’", "c’’’", "f’’", "ais’", "dis’", "gis", "cis", "Fis", "H#", "E#", "A##", "D##", "G###", "C###"],
+    ["g’’’’’", "c’’’’’", "f’’’’", "ais’’’", "dis’’’", "gis’’", "cis’’", "fis’", "h", "e", "A", "Dis", "Gis#", "Cis#", "Fis##", "H###", "E###"],
+    ["dis’’’’’", "gis’’’’", "cis’’’’", "fis’’’", "h’’", "e’’", "a’", "d’", "g", "c", "F", "Ais#", "Dis#", "Gis##", "Cis##", "Fis###"], 
+    ["h’’’’", "e’’’’", "a’’’", "d’’’", "g’’", "c’’", "f’", "ais", "dis", "Gis", "Cis", "Fis#", "H##", "E##", "A###", "D###"],
+    ["g’’’’", "c’’’’", "f’’’", "ais’’", "dis’’", "gis’", "cis’", "fis", "H", "E", "A#", "D#", "G##", "C##", "F###"],
+    ["dis’’’’", "gis’’’", "cis’’’", "fis’’", "h’", "e’", "a", "d", "G", "C", "F#","Ais##","Dis##","Gis###","Cis###"],
+    ["h’’’", "e’’’", "ais’’", "dis’’", "gis’", "cis’", "fis", "H", "E", "A#", "D#", "G##", "C##", "F###"],
+    ["g’’’", "c’’’", "f’’", "ais’", "dis’", "gis", "cis", "Fis", "H#", "E#", "A##", "D##", "G###", "C###"],
+    ["dis’’’", "gis’’", "cis’’", "fis’", "h", "e", "A", "Dis", "Gis#", "Cis#", "Fis##", "H###", "E###"],
+    ["h’’", "e’’", "a’", "d’", "g", "c", "F", "Ais#", "Dis#", "Gis##", "Cis##", "Fis###"],
+    ["g’’", "c’’", "f’", "ais", "dis", "Gis", "Cis", "Fis#", "H##", "E##", "A###", "D###"],
+    ["dis’’", "gis’", "cis’", "fis", "H", "E", "A#", "D#", "G##", "C##", "F###"],
+    ["h’", "e’", "a", "d", "G", "C", "F#", "Ais##", "Dis##", "Gis###", "Cis###"],
+    ["g’", "c’", "f", "Ais", "Dis", "Gis#", "Cis#", "Fis##", "H###", "E###"],
+    ["dis’", "gis", "cis", "Fis", "H#", "E#", "A##", "D##", "G###", "C###"],
+    ["h", "e", "A", "D", "G#", "C#", "F##", "Ais###", "Dis###"],
+    ["g", "c", "F", "Ais#", "Dis#", "Gis##", "Cis##", "Fis###"],
+    ["dis", "Gis", "Cis", "Fis#", "H##", "E##", "A###", "D###"],
+    ["H", "E", "A#", "D#", "G##", "C##", "F###"],
+    ["G", "C", "F#", "Ais##", "Dis##", "Gis###", "Cis###"],
+    ["Dis", "Gis#", "Cis#", "Fis##", "H###", "E###"],
+    ["H#", "E#", "A##", "D##", "G###", "C###"],
+    ["G#", "C#", "F##", "Ais###", "Dis###"],
+    ["Dis#", "Gis##", "Cis##", "Fis###"],
+    ["H##", "E##", "A###", "D###"],
+    ["G##", "C##", "F###"],
+    ["Dis##", "Gis###", "Cis###"],
+    ["H###", "E###"],
+    ["G###", "C###"],
+    ["Dis###"],
+];
+
+
+let quintenterzenSMALL = [
+    ["g’’’", "c’’’", "f’’", "ais’", "dis’", "gis", "cis", "Fis", "H#", "E#", "A##", "D##", "G###", "C###"],
+    ["dis’’’", "gis’’", "cis’’", "fis’", "h", "e", "A", "D", "G#", "C#", "F##", "Ais###", "Dis###"],
+    ["h’’", "e’’", "a’", "d’", "g", "c", "F", "Ais#", "Dis#", "Gis##", "Cis##", "Fis###"],
+    ["g’’", "c’’", "f’", "ais", "dis", "Gis", "Cis", "Fis#", "H##", "E##", "A###", "D###"],
+    ["dis’’", "gis’", "cis’", "fis", "H", "E", "A#", "D#", "G##", "C##", "F###", ],
+    ["h’", "e’", "a", "d", "G", "C", "F#", "Ais##", "Dis##", "Gis###", "Cis###"],
+    ["g’", "c’", "f", "Ais", "Dis", "Gis#", "Cis#", "Fis##", "H###", "E###"],
+    ["dis’", "gis", "cis", "Fis", "H#", "E#", "A##", "D##", "G###", "C###"],
+    ["h", "e", "A", "D", "G#", "C#", "F##", "Ais###", "Dis###"],
+    ["g", "c", "F", "Ais#", "Dis#", "Gis##", "Cis##", "Fis###"],
+    ["dis", "Gis", "Cis", "Fis#", "H##", "E##", "A###", "D###"],
+    ["H", "E", "A#", "D#", "G##", "C##", "F###"],
+    ["G", "C", "F#", "Ais##", "Dis##", "Gis###", "Cis###"],
+    ["Dis", "Gis#", "Cis#", "Fis##", "H###", "E###"],
+    ["H#", "E#", "A##", "D##", "G###", "C###"],
+    ["G#", "C#", "F##", "Ais###", "Dis###"],
+    ["Dis#", "Gis##", "Cis##", "Fis###"],
+    ["H##", "E##", "A###"],
+    ["G##", "C##"],
+    ["Dis##"]
+];
+
+
+let quintenterzenVERYSMALL = [
+//9
+    ["e’’’’", "a’’’", "d’’’", "g’’", "c’’", "f’", "ais", "dis", "Gis"],
+//8
+    ["c’’’’", "f’’’", "ais’’", "dis’’", "gis’", "cis’", "fis", "H"],
+    ["gis’’’", "cis’’’", "fis’’", "h’", "e’", "a", "d", "G"],
+//7
+    ["e’’’", "a’’", "d’’", "g’", "c’", "f", "Ais"],
+    ["c’’’", "f’’", "ais’", "dis’", "gis", "cis", "Fis"],
+//6
+    ["gis’’", "cis’’", "fis’", "h", "e", "A"],
+    ["e’’", "a’", "d’", "g", "c"],
+//5
+    ["c’’", "f’", "ais", "dis", "Gis"],
+    ["gis’", "cis’", "fis", "H", "E"],
+//4
+    ["e’", "a", "d", "G"],
+    ["c’", "f", "Ais", "Dis"],
+//3
+    ["gis", "cis", "Fis"],
+    ["e", "A", "D"],
+//2
+    ["c", "F"],
+//1
+    ["A"]
+];
+
+/*OLD OLD NETWORK
+
 let quintenterzen = [
 //18
     ["h’’’’’", "e’’’’’", "a’’’’", "d’’’’", "g’’’", "c’’’", "f’’", "ais’", "dis’", "gis", "cis", "Fis", "H#", "E#", "A##", "D##", "G###", "C###"],
@@ -363,6 +462,8 @@ let quintenterzenVERYSMALL = [
     ["E"],
     ["Cis"]
 ];
+
+*/
 
 //MIDI NOTES AND EVENTS
 let midiNotes = {
@@ -2127,13 +2228,13 @@ function buidlbotton( cx, cy, r, titletext, svgns, cocol, colstro, atext ){
 function getDreiklang( cx, cy, r, incw, inch, n0, nq, nt1, nt2, cocol, colstro ){
     let cont = document.createElementNS( xmlns, 'g' );
     let ri = Math.sqrt( (r*r)-((r/2)*(r/2)) );
-    if( n0 !== undefined && nq !== undefined && nt1 !== undefined ){
+    if( n0 !== undefined && nt2 !== undefined && nt1 !== undefined ){
         let po = "";
         po += cx.toString()+","+cy.toString()+" ";
-        po += (cx+(incw/2)).toString()+","+(cy-inch).toString()+" "; 
-        po += (cx+incw).toString()+","+(cy).toString()+" "; 
+        po += (cx+(incw)).toString()+","+(cy+inch).toString()+" "; 
+        po += (cx).toString()+","+(cy+inch).toString()+" "; 
         let popo = document.createElementNS( xmlns, 'polygon' );
-            popo.setAttribute( 'title', n0.toString()+","+nq.toString()+","+nt1.toString() );
+            popo.setAttribute( 'title', n0.toString()+","+nt1.toString()+","+nt2.toString() );
             popo.setAttribute( 'id', countbuttons.toString()+n0+"d0" );
             popo.setAttribute( 'fill' , cocol     );
             popo.setAttribute( 'stroke' , colstro     );
@@ -2144,8 +2245,8 @@ function getDreiklang( cx, cy, r, incw, inch, n0, nq, nt1, nt2, cocol, colstro )
     if( n0 !== undefined && nq !== undefined && nt2 !== undefined ){
         let poo = "";
         poo += cx.toString()+","+cy.toString()+" ";
-        poo += (cx+(incw/2)).toString()+","+(cy+inch).toString()+" "; 
         poo += (cx+incw).toString()+","+(cy).toString()+" "; 
+        poo += (cx+incw).toString()+","+(cy+inch).toString()+" "; 
         let popopo = document.createElementNS( xmlns, 'polygon' );
             popopo.setAttribute( 'title', n0.toString()+","+nq.toString()+","+nt2.toString() );
             popopo.setAttribute( 'id', countbuttons.toString()+n0+"d#" );
@@ -2160,33 +2261,19 @@ function getDreiklang( cx, cy, r, incw, inch, n0, nq, nt1, nt2, cocol, colstro )
     return cont;
 }
 
-function getZweiklang( cx, cy, r, incw, inch, n0, nq, nt1, nt2, cocol, colstro ){
+function getZweiklang( cx, cy, r, incw, inch, n0, nq, nt1, nt2, cocol, colstro, n ){
+    //console.log(n);
+    let nn = n.split(" ");
     let cont = document.createElementNS( xmlns, 'g' );
     let hi = Math.round(r/2);
     let ri = Math.sqrt( (r*r)-((r/2)*(r/2)) );
-    
-    if( n0 !== undefined && nq !== undefined ){
-        let poo = "";
-        poo += (cx).toString()+","+(cy-(ri/3)).toString()+" "; 
-        poo += (cx+incw).toString()+","+(cy-(ri/3)).toString()+" "; 
-        poo += (cx+incw).toString()+","+(cy+(ri/3)).toString()+" "; 
-        poo += cx.toString()+","+(cy+(ri/3)).toString()+" "; 
-        let rere1 = document.createElementNS( xmlns, 'polygon' );
-            rere1.setAttribute( 'title', n0.toString()+","+nq.toString() );
-            rere1.setAttribute( 'id', countbuttons.toString()+n0+"z0" );
-            rere1.setAttribute( 'fill' , cocol     );
-            rere1.setAttribute( 'stroke' , colstro     );
-            rere1.setAttribute( 'name' , cocol     );
-            rere1.setAttribute( 'points', poo );
-        cont.appendChild( rere1 );
-    }
-    if( n0 !== undefined && nt2 !== undefined ){
+    if( n0 !== undefined && nt2 !== undefined ){ //ton und schraeg 
         let pooo = "";
         
-        pooo += (cx+(r/3)).toString()+","+(cy).toString()+" "; //eigenes 6 eck
-        pooo += (cx+(incw/2)+(r/3)).toString()+","+(cy+inch).toString()+" "; //mitte oben
-        pooo += (cx+(incw/2)-(r/3)).toString()+","+(cy+inch).toString()+" "; //anderes 6 eck
-        pooo += (cx-(r/3)).toString()+","+(cy).toString()+" ";
+        pooo += (cx+r).toString()+","+cy.toString()+" "; //eigenes 6 eck
+        pooo += (cx+incw+r).toString()+","+(cy+inch).toString()+" "; //mitte oben
+        pooo += (cx+incw-r).toString()+","+(cy+inch).toString()+" "; //anderes 6 eck
+        pooo += (cx-r).toString()+","+(cy).toString()+" ";
         let rere2 = document.createElementNS( xmlns, 'polygon' );
             rere2.setAttribute( 'title', n0.toString()+","+nt2.toString() );
             rere2.setAttribute( 'id', countbuttons.toString()+n0+"z1" );
@@ -2196,12 +2283,30 @@ function getZweiklang( cx, cy, r, incw, inch, n0, nq, nt1, nt2, cocol, colstro )
             rere2.setAttribute( 'points', pooo );
         cont.appendChild( rere2 );
     }
-    if( n0 !== undefined && nt1 !== undefined ){
+    if( n0 !== undefined && nq !== undefined ){ //ton und quinte
+        
+        
+        let poo = "";
+        poo += (cx).toString()+","+(cy-(ri/2)).toString()+" "; 
+        poo += (cx+incw).toString()+","+(cy-(ri/2)).toString()+" "; 
+        poo += (cx+incw).toString()+","+(cy+(ri/2)).toString()+" "; 
+        poo += cx.toString()+","+(cy+(ri/2)).toString()+" "; 
+        let rere1 = document.createElementNS( xmlns, 'polygon' );
+            rere1.setAttribute( 'title', n0.toString()+","+nq.toString() );
+            rere1.setAttribute( 'id', countbuttons.toString()+n0+"z0" );
+            rere1.setAttribute( 'fill' , cocol     );
+            rere1.setAttribute( 'stroke' , colstro     );
+            rere1.setAttribute( 'name' , cocol     );
+            rere1.setAttribute( 'points', poo );
+        cont.appendChild( rere1 );
+    }
+    if( n0 !== undefined && nt1 !== undefined ){//ton und terz
         let poooo = "";
-        poooo += (cx-(r/3)).toString()+","+(cy).toString()+" "; //eigenes 6 eck
-        poooo += (cx+(incw/2)-(r/3)).toString()+","+(cy-inch).toString()+" "; //mitte oben
-        poooo += (cx+(incw/2)+(r/3)).toString()+","+(cy-inch).toString()+" "; //anderes 6 eck
-        poooo += (cx+(r/3)).toString()+","+(cy).toString()+" ";
+        //console.log("von", nn[0], "nach", nn[3]);
+        poooo += (cx-(r/2)).toString()+","+cy.toString()+" "; 
+        poooo += (cx-(r/2)).toString()+","+(cy+inch).toString()+" "; //mitte oben
+        poooo += (cx+(r/2)).toString()+","+(cy+inch).toString()+" "; //anderes 6 eck
+        poooo += (cx+(r/2)).toString()+","+(cy).toString()+" ";
         let rere3 = document.createElementNS( xmlns, 'polygon' );
             rere3.setAttribute( 'title', n0.toString()+","+nt1.toString() );
             rere3.setAttribute( 'id', countbuttons.toString()+n0+"z2" );
@@ -2220,6 +2325,7 @@ function getEinklang( cx, cy, r, titletext, cocol, colstro, textlab ){
     let subt = document.createElementNS( xmlns, 'tspan');
     let countupper = textlab.split("’").length-1;
     let a_t = "";
+    
     if( textlab.indexOf("’") !== -1 ){
         a_t = "’";
     } else if( textlab.indexOf("#") !== -1 ){
@@ -2234,43 +2340,47 @@ function getEinklang( cx, cy, r, titletext, cocol, colstro, textlab ){
             subt.setAttribute( 'baseline-shift', "sub" );
         }
         subt.setAttribute('fill', 'black');
-        subt.style.fontSize = elemfontsize;//(Math.round(r/2)).toString()+'px';
+        subt.style.fontSize = (Math.round(elemfontsize/3)*2).toString()+"px";//(Math.round(r/2)).toString()+'px';
         subt.textContent = (textlabspl.length-1).toString();
         textlab = textlabspl[ 0 ];
         add = -3;
     }
     
     
-    let ll = textlab.length;
-    if( ll === 1){
-        text.setAttribute('x', cx-Math.round(r)+9+add);
-    } else if(ll === 2 ){
-        text.setAttribute('x', cx-Math.round(r)+7+add);
-    } else{
-        text.setAttribute('x', cx-Math.round(r)+6+add);
-    }
-    text.setAttribute('y', cy+2);
+    //let ll = textlab.length;
+    //if( ll === 1){
+    //    text.setAttribute('x', cx-Math.round(r));
+    //} else if(ll === 2 ){
+    //    text.setAttribute('x', cx-Math.round(r));
+    //} else{
+        text.setAttribute('x', cx-Math.round(r)+2);
+    //}
+    text.setAttribute('y', cy+3);
     text.setAttribute('fill', 'black');
-    text.setAttribute('font-family', 'monospace'); 
-    text.style.fontSize = elemfontsize;//(Math.round(r/2)).toString()+'px';
+    text.setAttribute('font-family', 'monospace');
+    text.setAttribute('font-size', elemfontsize.toString()+'px' ); 
     text.textContent = textlab;
     text.appendChild(subt);
     let ri = Math.sqrt( (r*r)-((r/2)*(r/2)) );
-    let po = "";
+    /*let po = "";
     po += (cx+r).toString()+","+cy.toString()+" "; //r 0
     po += (cx+(r/2)).toString()+","+(cy+ri).toString()+" "; //u 1
     po += (cx-(r/2)).toString()+","+(cy+ri).toString()+" "; //uu 2
     po += (cx-r).toString()+","+cy.toString()+" "; //l 3
     po += (cx-(r/2)).toString()+","+(cy-ri).toString()+" "; //o 4
     po += (cx+(r/2)).toString()+","+(cy-ri).toString()+" "; //oo 5
-    
-    let popo = document.createElementNS( xmlns, 'polygon' );
+    */
+    let popo = document.createElementNS( xmlns, 'rect' );
         popo.setAttribute( 'title', titletext );
         popo.setAttribute( 'id', countbuttons.toString()+titletext+"e0" );
         popo.setAttribute( 'fill' , cocol     );
         popo.setAttribute( 'stroke' , colstro     );
         popo.setAttribute( 'name' , cocol     );
-        popo.setAttribute( 'points', po );
+        //popo.setAttribute( 'points', po );
+        popo.setAttribute( 'x', cx-r);
+        popo.setAttribute( 'y', cy-r);
+        popo.setAttribute( 'height', r+r);
+        popo.setAttribute( 'width', r+r);
     
     cont.appendChild( popo );
     cont.appendChild( text );   
@@ -2313,11 +2423,11 @@ function buildUIbuttons( msvg ){ //vertival display better perf
             }catch{}
             let notenameT1 = undefined;
             try{
-                notenameT1 = quintenterzen[indexTerzen-1][indexQuniten+addalittle];
+                notenameT1 = quintenterzen[indexTerzen+1][indexQuniten];
             }catch{}
             let notenameT2 = undefined;
             try{
-                notenameT2 = quintenterzen[indexTerzen+1][indexQuniten+addalittle];
+                notenameT2 = quintenterzen[indexTerzen+1][indexQuniten+1];
             }catch{}
             
             if( notename == undefined ){
@@ -2325,7 +2435,7 @@ function buildUIbuttons( msvg ){ //vertival display better perf
             }
             
             //
-            
+            //console.log(notename);
             let randcolor = midiNotesCOLOR[ notename ][0];
             let randcolor2 =  midiNotesCOLOR[ notename ][1];
             if( alternate % 2 == 0 ){
@@ -2333,7 +2443,7 @@ function buildUIbuttons( msvg ){ //vertival display better perf
             } else {
                 msvg.appendChild( getDreiklang( x+(incforW/2), y, elemradius, incforW, incforH,  midiNotes[ notename ], midiNotes[ notenameQ ], midiNotes[ notenameT1 ], midiNotes[ notenameT2 ], randcolor, randcolor2 ) );
             }
-            alternate+=1;
+            //alternate+=1;
             indexTerzen+=1;
             
         }
@@ -2362,11 +2472,11 @@ function buildUIbuttons( msvg ){ //vertival display better perf
             }catch{}
             let notenameT1 = undefined;
             try{
-                notenameT1 = quintenterzen[indexTerzen-1][indexQuniten+addalittle];
+                notenameT1 = quintenterzen[indexTerzen+1][indexQuniten];
             }catch{}
             let notenameT2 = undefined;
             try{
-                notenameT2 = quintenterzen[indexTerzen+1][indexQuniten+addalittle];
+                notenameT2 = quintenterzen[indexTerzen+1][indexQuniten+1];
             }catch{}
             
             if( notename == undefined ){
@@ -2376,11 +2486,11 @@ function buildUIbuttons( msvg ){ //vertival display better perf
             let randcolor = midiNotesCOLOR[ notename ][0];
             let randcolor2 = midiNotesCOLOR[ notename ][1];
             if( alternate % 2 == 0 ){
-                msvg.appendChild( getZweiklang( x, y, elemradius, incforW, incforH, midiNotes[ notename ], midiNotes[ notenameQ ], midiNotes[ notenameT1 ], midiNotes[ notenameT2 ], randcolor, randcolor2 ) );
+                msvg.appendChild( getZweiklang( x, y, elemradius, incforW, incforH, midiNotes[ notename ], midiNotes[ notenameQ ], midiNotes[ notenameT1 ], midiNotes[ notenameT2 ], randcolor, randcolor2, notename+" "+notenameQ+" "+notenameT1+" "+notenameT2 ) );
             } else {
-                msvg.appendChild( getZweiklang( x+(incforW/2), y, elemradius, incforW, incforH,  midiNotes[ notename ], midiNotes[ notenameQ ], midiNotes[ notenameT1 ], midiNotes[ notenameT2 ], randcolor, randcolor2 ) );
+                msvg.appendChild( getZweiklang( x+(incforW/2), y, elemradius, incforW, incforH,  midiNotes[ notename ], midiNotes[ notenameQ ], midiNotes[ notenameT1 ], midiNotes[ notenameT2 ], randcolor, randcolor2, notename+" "+notenameQ+" "+notenameT1+" "+notenameT2 ) );
             }
-            alternate+=1;
+            //alternate+=1;
             indexTerzen += 1;
         }
         indexQuniten+=1;
@@ -2407,7 +2517,7 @@ function buildUIbuttons( msvg ){ //vertival display better perf
             } else {
                 msvg.appendChild( getEinklang( x+(incforW/2), y, elemradius,  midiNotes[ notename ], randcolor, randcolor2, notename ) );
             }
-            alternate+=1;
+            //alternate+=1;
             indexTerzen+=1;
         }
         indexQuniten+=1;
@@ -2474,7 +2584,7 @@ function screenInit( ){
     elemsize = Math.abs(Math.round(Math.max(w,h) / (2*elemcount))-elemdist);
 
     elemradius = Math.floor( elemsize / 2 );
-    elemfontsize = (Math.round(elemradius/2)).toString()+'px';
+    elemfontsize = Math.round(elemradius/2) + Math.round(elemradius/3);
 
     //add options for pull down menus
 }
