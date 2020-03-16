@@ -15,17 +15,17 @@ The build is a light wooden enclosure housing a 24" touchscreen and a minicomput
 
 ### Parts list
 - Raspberry 4
-- powersupply (? usb-c cable)
+- powersupply (usb-c cable)
 - Iiyama ProLite T2454MSC 24"
 - a sheet of plywood
 - USB- and MINIHDMI-cable
-- xxGB microSDHC card
+- 32GB microSDHC card
 - glue and screws
 
-### Process
-T
-### Notes
-W
+### Pictures
+![](tenn.jpg?raw=true)
+![](backto.jpg?raw=true)
+![](draknigh.jpg?raw=true)
 
 ## Software
 
