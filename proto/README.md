@@ -29,6 +29,6 @@ The build is a light wooden enclosure housing a 24" touchscreen and a minicomput
 
 ## Software
 
-I prepared a Rasbian installation and configured it to run on the hardware as intended.
+...
 
 
