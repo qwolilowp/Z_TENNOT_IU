@@ -70,6 +70,8 @@ let elemdist = 5;
 let elemcount = 19;
 let elemradius = 0;
 let elemfontsize = 0;
+let vs = 4;
+let hs = 7;
 
 /*MIDI globals*/
 //NEUER STRANDRAD: POLYPHONE EXPRESSION (MPE)
@@ -468,197 +470,197 @@ let quintenterzenVERYSMALL = [
 //MIDI NOTES AND EVENTS
 let midiNotes = {
 "gis’’’’’’": 128, 
-"ges’’’’’’": 128,
+//"ges’’’’’’": 128,
 "g’’’’’’":    127,	
 "fis’’’’’’":  126,
-"ges’’’’’’":  126,	
+//"ges’’’’’’":  126,	
 "f’’’’’’":    125,
 "e’’’’’’":	  124,
 "dis’’’’’’":   123,
-"es’’’’’’":   123,	
+//"es’’’’’’":   123,	
 "d’’’’’’":	  122,
 "cis’’’’’’":  121, 
-"des’’’’’’":  121,
+//"des’’’’’’":  121,
 "c’’’’’’": 120,
 //
 "h’’’’’": 119,
 "ais’’’’’": 118,
-"b’’’’’": 118,
+//"b’’’’’": 118,
 "a’’’’’": 117,
 "gis’’’’’":116,
-"ges’’’’’":116,
+//"ges’’’’’":116,
 "g’’’’’":115,
 "fis’’’’’":114,
-"ges’’’’’":114,
+//"ges’’’’’":114,
 "f’’’’’":113,
 "e’’’’’": 112,
 "dis’’’’’":111,
-"es’’’’’":111,
+//"es’’’’’":111,
 "d’’’’’":110,
 "cis’’’’’":109,
-"des’’’’’":109,
+//"des’’’’’":109,
 "c’’’’’":108,
 //
 "h’’’’":107,
 "ais’’’’":106,
-"b’’’’":106,
+//"b’’’’":106,
 "a’’’’":105,
 "gis’’’’":104,
-"ges’’’’":104,
+//"ges’’’’":104,
 "g’’’’":103,
 "fis’’’’":102, 
-"ges’’’’":102,	
+//"ges’’’’":102,	
 "f’’’’":101,	
 "e’’’’":100,	
 "dis’’’’":99,
-"es’’’’":99,	
+//"es’’’’":99,	
 "d’’’’":98,
 "cis’’’’":97,
-"des’’’’":97,	
+//"des’’’’":97,	
 "c’’’’":96,
 //
 "h’’’":95,
 "ais’’’":94,
-"b’’’":94,
+//"b’’’":94,
 "a’’’":93,
 "gis’’’":92,
-"as’’’":92,
+//"as’’’":92,
 "g’’’":91,
 "fis’’’":90,
-"ges’’’":90,
+//"ges’’’":90,
 "f’’’":89,
 "e’’’":88,
 "dis’’’":87,
-"es’’’":87,
+//"es’’’":87,
 "d’’’":86,
 "cis’’’":85,
-"des’’’":85,
+//"des’’’":85,
 "c’’’":84,
 //
 "h’’":83,
-"ais’’":82,
+//"ais’’":82,
 "b’’":82,
 "a’’":81,
 "gis’’":80,
-"as’’":80,
+//"as’’":80,
 "g’’":79,
 "fis’’":78,
-"ges’’":78,
+//"ges’’":78,
 "f’’":77,
 "e’’":76,
 "dis’’":75,
-"es’’":75,
+//"es’’":75,
 "d’’":74,
 "cis’’":73,
-"des’’":73,
+//"des’’":73,
 "c’’":72,
 //
 "h’":71,
 "ais’":70,
-"b’":70,
+//"b’":70,
 "a’":69, 
 "gis’":68,
-"as’":68,
+//"as’":68,
 "g’":67,	
 "fis’":66,
-"ges’":66,
+//"ges’":66,
 "f’":65,
 "e’":64,	
 "dis’":63,
-"es’":64,
+//"es’":64,
 "d’":62,
 "cis’":61,
-"des’":61,
+//"des’":61,
 "c’":60,
 //
 "h":59,
 "ais":58,
-"b":58,
+//"b":58,
 "a":57,
 "gis":56,
-"as":56,
+//"as":56,
 "g":55,
 "fis":54,
-"ges":54,
+//"ges":54,
 "f":53,
 "e":52,
 "dis":51,
-"es":51,
+//"es":51,
 "d":50,
 "cis":49,
-"des":49,
+//"des":49,
 "c":48,
 //
 "H":47,
 "Ais":46,
-"B":46,
+//"B":46,
 "A":45,	
 "Gis":44,
-"As":44,
+//"As":44,
 "G": 43,	
 "Fis":42,
-"Ges":42,	
+//"Ges":42,	
 "F":41,	
 "E":40,	
 "Dis":39,
-"Es":39,
+//"Es":39,
 "D":38,	
 "Cis":37,
-"Des":37,
+//"Des":37,
 "C":36,
 //
 "H#":35,	
 "Ais#":34,
-"B#":34,	
+//"B#":34,	
 "A#":33,	
 "Gis#":32,
-"As#":32,
+//"As#":32,
 "G#":31,	
 "Fis#":30,
-"Ges#":30,	
+//"Ges#":30,	
 "F#":29,	
 "E#":28,	
 "Dis#":27,
-"Es#":27,
+//"Es#":27,
 "D#":26,	
 "Cis#":25,
-"Des#":25,
+//"Des#":25,
 "C#":24,	
 //
 "H##":23,	
 "Ais##":22,
-"B##":22,	
+//"B##":22,	
 "A##":21,
 "Gis##":20,	
-"As##":20,
+//"As##":20,
 "G##":19,
 "Fis##":18,	
-"Ges##":18,
+//"Ges##":18,
 "F##":17,	
 "E##":16,
 "Dis##":15,
-"Es##":15,	
+//"Es##":15,	
 "D##":14,	
 "Cis##":13,
-"Des##":13,
+//"Des##":13,
 "C##":12,
 //	
 "H###":11,
 "Ais###":10,	
-"B###":10,	
+//"B###":10,	
 "A###":9,	
 "Gis###":8,
-"As###":8,	
+//"As###":8,	
 "G###":7,	
 "Fis###":6,
-"Ges###":6,
+//"Ges###":6,
 "F###":5,	
 "E###":4,
-"Dis###":4,
+//"Dis###":4,
 "Es###":3,
 "D###":2,
 "Cis###":1, 
-"Des###":1,
+//"Des###":1,
 "C###":0	
 //
 };
@@ -1193,6 +1195,8 @@ function TOstorage( ){
     //localStorage.setItem( "useinternal", useinternal );
     localStorage.setItem( "mouseit", mouseit );
     localStorage.setItem( "elemdist", elemdist );
+    localStorage.setItem( "vs", vs );
+    localStorage.setItem( "hs", hs );
 }
 
 function FROMstorage( ){
@@ -1214,12 +1218,13 @@ function FROMstorage( ){
     //useinternal = JSON.parse( localStorage.getItem( "useinternal" ) );
     mouseit = JSON.parse( localStorage.getItem( "mouseit" ) );
     elemdist = parseInt( localStorage.getItem( "elemdist" ) );
+    vs = parseInt( localStorage.getItem( "vs" ) );
+    hs = parseInt( localStorage.getItem( "hs" ) );
 }
 
 function initSettings( ){
     if( localStorage.getItem( "mixedtraj" ) !== null ){
-        FROMstorage( ); //if config present it is the preset or a setting
-        
+        FROMstorage( ); //if config present it is the preset or a setting       
     } else {
         TOstorage( ); //write presets
     } 
@@ -1321,6 +1326,22 @@ function buttdist( ){
     if(elemdisttemp > 0 && elemdisttemp < 100 ){
         elemdist = elemdisttemp;
     }
+    
+    TOstorage( );
+    location.reload( );
+}
+
+function buttvs( ){
+    let thesel = document.getElementById("vs");
+    vs = parseInt( thesel.options[ thesel.selectedIndex ].value );
+     
+    TOstorage( );
+    location.reload( );
+}
+
+function butths( ){
+    let thesel = document.getElementById("hs");
+    hs = parseInt(thesel.options[ thesel.selectedIndex ].value);
     
     TOstorage( );
     location.reload( );
@@ -1625,6 +1646,9 @@ function initMenu( ){
     //document.getElementById('internalsynthsw').checked = useinternal;
     //document.getElementById('useklickel').checked = mouseit;
     document.getElementById("buttspace").selectedIndex = parseInt(elemdist);
+    console.log("vs", vs, "hs", hs);
+    document.getElementById("vs").selectedIndex = parseInt(vs);
+    document.getElementById("hs").selectedIndex = parseInt(hs);
     //position of menu
     let m = document.getElementById('menu');
     m.style.width = (w-120).toString()+"px";
@@ -2388,7 +2412,65 @@ function getEinklang( cx, cy, r, titletext, cocol, colstro, textlab ){
     return cont;
 }
 
+function buildTonnetzarray(){
+    let notenallesamt = Object.keys( midiNotes );
+    //console.log("notenalle", notenallesamt)
+
+    let offset = 0;
+    let howmanyoctin = Math.floor( notenallesamt.length/vs );
+    if( quintenterzen.length < howmanyoctin ){
+        offset = Math.floor( (howmanyoctin-quintenterzen.length)/2 );
+    }
+    let vpos = offset;
+    let hpos = vpos;
+    //console.log(notenallesamt.length/vs, quintenterzen.length, offset);
+    for( let ver in quintenterzen ){
+        for( let hor in quintenterzen[ ver ] ){
+            quintenterzen[ ver ][ hor ] = notenallesamt[ hpos ];
+            hpos += hs;
+        }
+        vpos += vs;
+        hpos = vpos;
+    }
+    offset = 0;
+    
+    if( quintenterzenSMALL.length < howmanyoctin ){
+        offset = Math.floor( howmanyoctin-quintenterzenSMALL.length );
+    } else { offset = 0; }
+    
+    //console.log( notenallesamt.length/vs, quintenterzenSMALL.length, offset);
+    vpos = offset;
+    hpos = vpos;
+    for( let ver in quintenterzenSMALL ){
+        for( let hor in quintenterzenSMALL[ ver ] ){
+            quintenterzenSMALL[ ver ][ hor ] = notenallesamt[ hpos ];
+            hpos += hs;
+        }
+        vpos += vs;
+        hpos = vpos;
+    }
+    
+    if( quintenterzenVERYSMALL.length < howmanyoctin ){
+        offset = Math.floor( howmanyoctin-quintenterzenVERYSMALL.length );
+    } else { offset = 0; }
+    //console.log(notenallesamt.length/vs, quintenterzenVERYSMALL.length*(vs/12), offset)
+
+    vpos = offset;
+    hpos = vpos;
+    for( let ver in quintenterzenVERYSMALL ){
+        for( let hor in quintenterzenVERYSMALL[ ver ] ){
+            quintenterzenVERYSMALL[ ver ][ hor ] = notenallesamt[ hpos ];
+            hpos += hs;
+        }
+        vpos += vs;
+        hpos = vpos;
+    }
+}
+
+
 function buildUIbuttons( msvg ){ //vertival display better perf
+
+    buildTonnetzarray();
     //select size of the key area
     if( currentsize === 1 ){
         quintenterzen = quintenterzenSMALL;
@@ -2435,7 +2517,7 @@ function buildUIbuttons( msvg ){ //vertival display better perf
             }
             
             //
-            //console.log(notename);
+            //console.log(notename, indexTerzen, indexQuniten);
             let randcolor = midiNotesCOLOR[ notename ][0];
             let randcolor2 =  midiNotesCOLOR[ notename ][1];
             if( alternate % 2 == 0 ){
