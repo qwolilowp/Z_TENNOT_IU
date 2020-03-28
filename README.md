@@ -27,7 +27,7 @@ The MIDI menu let you control the hardware / software midi output the program sh
 ## UI (user interface) Menu
 ![](ui.png?raw=true)
 
-This menu is related to the user interface. You can choose if a path or trajectory you form with your touches has only a single type of note play (for example just hexagon buttons) or could be a mixture of all possible button forms. You can choose between a white and a black background (day/night selection). There is a select to increase the spcing between the hexagon buttons and a selction how big the botton areashould get. Note, if you change the size of the buttonarea the page gets reloaded. 
+This menu is related to the user interface. You can choose if a path or trajectory you form with your touches has only a single type of note play (for example just hexagon buttons) or could be a mixture of all possible button forms. You can choose between a white and a black background (day/night selection). There is a select to increase the spcing between the hexagon buttons and a selction how big the botton areashould get. Note, if you change the size of the buttonarea the page gets reloaded. Use The *vTS* and the *hTS* pulldown menu to change the halfetone steps of the tonnetz gui. *vTS* changes the vertical stepsize and *hTS* changes the horizontal stepsize.
 
 ## Gesture Menu
 ![](gest.png?raw=true)
