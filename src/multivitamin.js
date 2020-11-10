@@ -211,6 +211,9 @@ let sendtoall = false; //send to all channels
 let theMIDIout = null; //selected MIDI DEVICE
 let MIDIchanOffAvailable = [5,4,3,2,1]; //offset available
 
+/*NO MIDI*/
+let nomidiusage = false;
+
 /*OSC MSG*/    
 let jesnoOSC = false;
 let OSCstring = "/zTennoT/";
@@ -1532,7 +1535,7 @@ function showsubmenudiv( elemid, oelem ){
 
 function downseq( ){
     if( sequencer.length !== 0 ){
-        dodownit( JSON.stringify( sequencer ) +"----"+ w.toString()+","+h.toString(), "sequenc"+Date.now( ).toString( )+".seq",  "application/json" );
+        dodownit( JSON.stringify( sequencer ) +"----"+ w.toString()+","+h.toString()+","+vs.toString()+","+hs.toString()+","+currentsize.toString(), "sequenc"+Date.now( ).toString( )+".seq",  "application/json" );
     } else {
         alert("No Sequence to download.");
     }
@@ -1547,9 +1550,24 @@ function upseq( ){
         let wh = ab[1].split(",");
         let wo = parseInt( wh[0] );
         let ho = parseInt( wh[1] );
+        let vso = parseInt( wh[2] );
+        let hso = parseInt( wh[3] );
+        let cso = parseInt( wh[4] );
 		sequencer = JSON.parse( ab[0] );
+        console.log(vso, hso, cso)
+        //do a reminder if vs and hs and chosen layout do not match - say reconfigure or leave it but visfeedback will not correspond to notes
+        if( hs !== hso || vs !== vso || cso !== currentsize ){
+            let labelllli = "large";
+            if( cso === 1 ){
+                labelllli = "small";
+            } else if( cso === 2 ){
+                labelllli = "very small";
+            } else if( cso === NaN ){
+                labelllli = "NaN";
+            }
+            alert("Change UI settings to correspond to UI Settings of upload (mandatory). Change to: vST "+vso+", hST "+hso+", Size "+labelllli );
+        }
         //rebuild position of the sequnecer if w != w" and h != h"
-        
         if( w !== wo || h !== ho ){
             console.log(wo, w, ho, h);
             let corrW = w/wo;
@@ -1573,7 +1591,7 @@ function upseq( ){
 }
 
 function play( ){
-    console.log(doplay)
+    //console.log(doplay)
     if( !doplay ){
         doplay = true;
         TOstorage( );
@@ -1602,6 +1620,24 @@ function alltosilence(){
                                  ZERO_VEL]);
 
                         }
+                    }
+                }
+            }
+        }
+    }
+    //nomidi 
+    if( nomidiusage && setuseinternalsynth ){
+        for(let seqframe in sequencer){
+            for( let elemid in sequencer[ seqframe ][0] ){
+                for( let n = 0; n < sequencer[ seqframe ][0][ elemid ].length; n+=1 ){
+                    let notedurr = sequencer[ seqframe ][0][ elemid ][n][4];// - sequencer[ seqframe ][0][ elemid ][n][1];
+                    let channeloffset = sequencer[ seqframe ][0][ elemid ][ n ][2];
+                    for( let r = 0; r < sequencer[ seqframe ][0][ elemid ][ n ][0].length; r+=1 ){
+                        routeTOsynth( { data:
+                            [NOTE_OFFS[channeloffset][r], 
+                             parseInt( sequencer[ seqframe ][0][ elemid ][ n ][0][r] ), 
+                             ZERO_VEL] } );
+
                     }
                 }
             }
@@ -1744,6 +1780,32 @@ function fromseqtomidi( seqframeI ){
                         } 
                     }
                 }
+                //nomidi 
+                if( nomidiusage && setuseinternalsynth ){
+                    for( let r = 0; r < sequencer[ seqframe ][ 0 ][ elemid ][ n ][ 0 ].length; r+=1 ){
+                        routeTOsynth( {data:
+                        [NOTE_ONS[ channeloffset ][ r ], 
+                         parseInt( sequencer[ seqframe ][ 0 ][ elemid ][ n ][ 0 ][ r ] ), 
+                         VEL_VEL] });
+                        //send Aftertouch per channel 
+                        if( jesnoafter && jesnogest ){
+                            routeTOsynth( {data:
+                            //[( channelaftertouch<<4 ) + (CHANNEL[channeloffset][r]-1), 
+                            [CHAN_AFTERS[ channeloffset ][ r ],
+                            sequencer[ seqframe ][0][ elemid ][ n ][8]] });
+                        }
+                        //send Pitch Bend per channel
+                        if( jesnomodulation && jesnogest ){
+                            var valv1 = parseInt( (16384 * sequencer[ seqframe ][0][ elemid ][ n ][8]) / 128 );
+                            var be1 = valv1&127;
+                            var be2 = valv1>>7;
+                            routeTOsynth({data: 
+                            [PITCHBES[ channeloffset ][ r ],
+                             be1,be2]});
+                        }
+                        //send 
+                    }
+                }
             }, durr );
             durr += notedurr
             setTimeout( function( ){  
@@ -1773,6 +1835,28 @@ function fromseqtomidi( seqframeI ){
                 if( MIDIchanOffAvailable.indexOf( channeloffset ) === -1 ){
                     MIDIchanOffAvailable.push( channeloffset );
                     //console.log("free chan", channeloffset)
+                }
+                //nomidi 
+                if( nomidiusage && setuseinternalsynth ){
+                    for( let r = 0; r < sequencer[ seqframe ][ 0 ][ elemid ][ n ][ 0 ].length; r+=1 ){
+                        routeTOsynth( {data:
+                            [NOTE_OFFS[ channeloffset ][ r ], 
+                             parseInt( sequencer[ seqframe ][ 0 ][ elemid ][ n ][ 0 ][ r ] ), 
+                             ZERO_VEL]});
+                        //send Aftertouch per channel 
+                        if( jesnoafter && jesnogest ){
+                            routeTOsynth({data:
+                            //[( channelaftertouch<<4 ) + (CHANNEL[channeloffset][r]-1), 
+                            [CHAN_AFTERS[ channeloffset ][ r ],
+                             0]});
+                        }
+                        //send Pitch Bend per channel
+                        if( jesnomodulation && jesnogest ){
+                            routeTOsynth( {data: 
+                            [PITCHBES[ channeloffset ][ r ],
+                             0,0]});
+                        }
+                    }
                 }
             }, durr );
         }
@@ -2057,6 +2141,7 @@ function pointermoveEvfkt( e ) {
                                     for( let i = 0; i < notesplaying[idofelem][lastNOTEsWere][0].length; i+=1 ){
                                         let nnn = parseInt(notesplaying[idofelem][lastNOTEsWere][0][i]);
                                         out.send([NOTE_OFFS[channeloffset][i], nnn, ZERO_VEL]);
+                                        
                                     }
                                     //send on to new
                                     for( let i = 0; i < currnotes.length; i+=1 ){
@@ -2064,6 +2149,19 @@ function pointermoveEvfkt( e ) {
                                         out.send([NOTE_ONS[channeloffset][i], nnn, VEL_VAL]);
                                     }
                                 }            
+                            }
+                            //nomidi 
+                            if( nomidiusage && setuseinternalsynth ){
+                                for( let i = 0; i < notesplaying[idofelem][lastNOTEsWere][0].length; i+=1 ){
+                                    let nnn = parseInt(notesplaying[idofelem][lastNOTEsWere][0][i]);
+                                    routeTOsynth( {data:[NOTE_OFFS[channeloffset][i], nnn, ZERO_VEL]} );
+                                    
+                                }
+                                //send on to new
+                                for( let i = 0; i < currnotes.length; i+=1 ){
+                                    let nnn = parseInt(currnotes[i]);
+                                    routeTOsynth( {data:[NOTE_ONS[channeloffset][i], nnn, VEL_VAL]} );
+                                }
                             }
                             //do add notes and
                             if( notesplaying[idofelem] ){
@@ -2107,6 +2205,13 @@ function pointerdownEventFkt( e ) {
                     out.send([NOTE_ONS[channeloffset][i], nnn, FULL_VEL]);
                 }
             }            
+        }
+        //no midi
+        if( nomidiusage && setuseinternalsynth ){
+            for( let i = 0; i < currnotes.length; i+=1 ){
+                let nnn = parseInt(currnotes[i]);
+                routeTOsynth( { data: [NOTE_ONS[channeloffset][i], nnn, FULL_VEL] });
+            }
         }
         let ix = e.pageX;
         let iy = e.pageY;
@@ -2164,6 +2269,16 @@ function pointerupEventFkt( e ) {
                         }
                     }  
                 }         
+            }
+            //nomidi 
+            if( nomidiusage && setuseinternalsynth ){
+                for( let l = 0; l < notesplaying[idofelem].length; l+=1 ){
+                    for( let partnotes = 0; partnotes < notesplaying[idofelem][l][0].length; partnotes+=1 ){
+                        routeTOsynth( {data: [ NOTE_OFFS[ notesplaying[idofelem][l][2] ][ partnotes ], 
+                                    notesplaying[idofelem][l][0][partnotes], 
+                                    ZERO_VEL ] } ); 
+                    }
+                }
             }
             //add to sequencer
             let currtrajectory = drawallTouch( );
@@ -2680,6 +2795,7 @@ function onMIDISuccess( midi ) {
     console.log('WebMIDI supported!', midi);
     MIDIinputs = midi.inputs;
     Midioutputs = midi.outputs;
+    //console.log(Midioutputs)
     for (let input of MIDIinputs.values()) {
         input.onmidimessage = getMIDIMessage;
         var opt = document.createElement("option");
@@ -2700,6 +2816,7 @@ function onMIDISuccess( midi ) {
 
 function onMIDIFailure( ){
     console.log('No WebMidi No Fun');
+    //nomidiusage = true; //???
 }
 
 function getMIDIMessage( midiMessage ) {
@@ -2712,8 +2829,9 @@ function midiInit( ){ //...
     if( window.navigator.requestMIDIAccess ){
         let midi = window.navigator.requestMIDIAccess().then( onMIDISuccess, onMIDIFailure );
     } else {
-        alert("NO WEBmidi NO fun. Update Browser.");
-        console.log("NO MIDI NO FUN");
+        alert("NO WEBmidi BUT internal fun. Using direkt massage passing. Activate internal Synth");
+        nomidiusage = true;
+        console.log("NO WEBmidi BUT fun. Using direkt massage passing. Activate internal synth.");
     }
 }
 
@@ -2724,6 +2842,7 @@ function midiInit( ){ //...
 *******************************************************************************/
 let notinitsynth = true;
 let audiocontext = null;
+let mermer = null;
 
 let attack = 0.0;			
 let release = 0.05;		
@@ -2737,41 +2856,45 @@ let notesinsynth = [];
 //let mastergain = null;
 
 function routeTOsynth( msg ){
-    //tunings[currtunning][notenumber]
-    // https://github.com/cwilso/monosynth/blob/gh-pages/index.html
-    let type = msg.data[0] & 0xf0; // channel agnostic message type. Thanks, Phil Burk.
-    
-    let channel = msg.data[0] & 0xf;
-    if( type === 144 || type === 128 ){
+    if( !notinitsynth ){
+        //console.log(msg);
+        //tunings[currtunning][notenumber]
+        // https://github.com/cwilso/monosynth/blob/gh-pages/index.html
+        let type = msg.data[0] & 0xf0; // channel agnostic message type. Thanks, Phil Burk.
         
-        
-        let note = msg.data[1];
-        let velocity = msg.data[2] / 128.0;
-        if( type === 128 ){
-            //note off
-            ENVES[channel].gain.cancelScheduledValues( 0 );
-			ENVES[channel].gain.setTargetAtTime( 0.0, 0, release );
-            notesinsynth[ channel ] = 0;
+        let channel = msg.data[0] & 0xf;
+
+        //console.log(type, channel);
+        if( type === 144 || type === 128 ){
+            
+            
+            let note = msg.data[1];
+            let velocity = msg.data[2] / 128.0;
+            if( type === 128 ){
+                //note off
+                ENVES[channel].gain.cancelScheduledValues( 0 );
+			    ENVES[channel].gain.setTargetAtTime( 0.0, 0, release );
+                notesinsynth[ channel ] = 0;
+            } else {
+                //console.log("note on", tunings[currtunning][note], )
+                OSCIS[channel].frequency.cancelScheduledValues( 0 );
+                notesinsynth[channel] = tunings[currtunning][note];
+			    OSCIS[channel].frequency.setTargetAtTime( tunings[currtunning][note], 0, portamento );
+                ENVES[channel].gain.cancelScheduledValues( 0 );
+			    ENVES[channel].gain.setTargetAtTime( velocity, 0, attack );
+            }
         } else {
-            //console.log("note on", tunings[currtunning][note], )
-            OSCIS[channel].frequency.cancelScheduledValues( 0 );
-            notesinsynth[channel] = tunings[currtunning][note];
-			OSCIS[channel].frequency.setTargetAtTime( tunings[currtunning][note], 0, portamento );
-            ENVES[channel].gain.cancelScheduledValues( 0 );
-			ENVES[channel].gain.setTargetAtTime( velocity, 0, attack );
-        }
-    } else {
-        let payload = Math.round(msg.data[1]/10);
-        //console.log( "t: ", type, "c: ", channel, "v: ", payload  );
-        if( notesinsynth[channel] !== 0 ){
+            let payload = Math.round(msg.data[1]/10);
             //console.log( "t: ", type, "c: ", channel, "v: ", payload  );
-            //let newfreq = notesinsynth[channel] + payload;
-            OSCIS[channel].frequency.cancelScheduledValues( 0 );
-	        //OSCIS[channel].frequency.setTargetAtTime( newfreq, 0, portamento );
-            OSCIS[channel].detune.setValueAtTime( payload, 0 );
+            if( notesinsynth[channel] !== 0 ){
+                //console.log( "t: ", type, "c: ", channel, "v: ", payload  );
+                //let newfreq = notesinsynth[channel] + payload;
+                OSCIS[channel].frequency.cancelScheduledValues( 0 );
+	            //OSCIS[channel].frequency.setTargetAtTime( newfreq, 0, portamento );
+                OSCIS[channel].detune.setValueAtTime( payload, 0 );
+            }
         }
     }
-    
 }
 
 function changeWaveForm( ){
@@ -2833,6 +2956,8 @@ function initSynth( ){
     computertuning();
     window.AudioContext = window.AudioContext || window.webkitAudioContext;
     audiocontext = new AudioContext( );
+    mermer = audiocontext.createChannelMerger( 16 );
+    mermer.connect( audiocontext.destination );
     //audiooutput = audiocontext.createMediaStreamDestination( );
     //mastergain = audiocontext.createGain( );
     //mastergain.gain.value = 100;
@@ -2846,7 +2971,7 @@ function initSynth( ){
 	    oscil.start(0);
 
         enve.gain.value = 0.0;
-        enve.connect( audiocontext.destination );
+        enve.connect( mermer );
 
         fil.frequency.value = 1000;
 	    fil.Q.value = 10.0;
@@ -3079,4 +3204,4 @@ function netz( elemid ){
     console.log("Ready for usage."); 
 }
 
-//eoffoe//
+//eoffoe// 
