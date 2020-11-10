@@ -136,5 +136,5 @@ If someone needs Open Sound Control, I can provide the whole software as browser
 
 # Installation
 
-If you want to use the software offline or on your server, just extract the content of the src folder to a dictory of your server and make this available. It's just a website. Note: For online operation HTTPS is required to enable webMIDI. If you run localhost, it is not requred. If you just open the index.html from a local folder a configuration of your browser is maybe needed. 
+If you want to use the software offline or on your server, just extract the content of the src folder to a dictory of your server and make this available. It's just a website. Note: For online operation HTTPS is required to enable webMIDI. If you run localhost, it is not required. If you just open the index.html from a local folder a configuration of your browser is maybe needed. 
 
