@@ -2843,11 +2843,12 @@ function midiInit( ){ //...
 let notinitsynth = true;
 let audiocontext = null;
 let mermer = null;
+let compressor = null;
+let splitter = null;
 
 let attack = 0.0;			
 let release = 0.05;		
 let portamento = 0.0;	
-
 
 let OSCIS = [];
 let ENVES = [];
@@ -2866,8 +2867,6 @@ function routeTOsynth( msg ){
 
         //console.log(type, channel);
         if( type === 144 || type === 128 ){
-            
-            
             let note = msg.data[1];
             let velocity = msg.data[2] / 128.0;
             if( type === 128 ){
@@ -2880,8 +2879,9 @@ function routeTOsynth( msg ){
                 OSCIS[channel].frequency.cancelScheduledValues( 0 );
                 notesinsynth[channel] = tunings[currtunning][note];
 			    OSCIS[channel].frequency.setTargetAtTime( tunings[currtunning][note], 0, portamento );
+                
                 ENVES[channel].gain.cancelScheduledValues( 0 );
-			    ENVES[channel].gain.setTargetAtTime( velocity, 0, attack );
+			    ENVES[channel].gain.setTargetAtTime( velocity, 0, attack ); //that should reset the gain value to all playing gains
             }
         } else {
             let payload = Math.round(msg.data[1]/10);
@@ -2956,8 +2956,24 @@ function initSynth( ){
     computertuning();
     window.AudioContext = window.AudioContext || window.webkitAudioContext;
     audiocontext = new AudioContext( );
+
     mermer = audiocontext.createChannelMerger( 16 );
-    mermer.connect( audiocontext.destination );
+    //mermer.connect( audiocontext.destination );
+    
+    splitter = audiocontext.createChannelSplitter(2);
+    
+    compressor = audiocontext.createDynamicsCompressor();
+    compressor.threshold.setValueAtTime(-10, audiocontext.currentTime);
+    compressor.knee.setValueAtTime(10, audiocontext.currentTime);
+    compressor.ratio.setValueAtTime(12, audiocontext.currentTime);
+    compressor.attack.setValueAtTime(0, audiocontext.currentTime);
+    compressor.release.setValueAtTime(0.25, audiocontext.currentTime);
+    
+
+    mermer.connect( compressor );
+    compressor.connect( splitter );
+    splitter.connect( audiocontext.destination );
+    
     //audiooutput = audiocontext.createMediaStreamDestination( );
     //mastergain = audiocontext.createGain( );
     //mastergain.gain.value = 100;
@@ -3204,4 +3220,4 @@ function netz( elemid ){
     console.log("Ready for usage."); 
 }
 
-//eoffoe// 
+//eoffoe//
