@@ -2812,6 +2812,12 @@ function onMIDISuccess( midi ) {
         opt.value = out.name;
         document.getElementById("outputportselector").appendChild(opt);
     }  
+    if( Midioutputs.size === 0 ){
+        console.log("Nothing connected.")
+        nomidiusage = true;
+    } else {
+        console.log("Midiousize: ", Midioutputs.size );
+    }
 }
 
 function onMIDIFailure( ){
