@@ -66,7 +66,7 @@ trajectory speed | Note Venocity | oscillator gain
 curvature | Channel Aftertouch | detune of all active osicillators
 
 ### Note
-Take a look into the browser list, if WeAudio is supported by your browser:
+Take a look into the browser list, if WebAudio is supported by your browser:
 
 https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API
 
